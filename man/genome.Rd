@@ -3,13 +3,13 @@
 \docType{data}
 \name{genome}
 \alias{genome}
-\title{Human Genome Summary.}
+\title{Human Genome Summary}
 \format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 24 rows and 14 columns.}
 \source{
 \url{https://en.wikipedia.org/wiki/Human_genome}
 }
 \usage{
-genome
+data(genome)
 }
 \description{
 A dataset containing summary information of the human genome.

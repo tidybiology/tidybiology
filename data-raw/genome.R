@@ -1,4 +1,4 @@
-#code chunk to scrape genome data
+#code to scrape genome data
 library(tidyverse)
 library(rvest)
 library(here)
