@@ -1,0 +1,33 @@
+Package: tidybiology
+Type: Package
+Title: Utility Functions and Data Sets for Tidy Biology
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Matthew",
+           family = "Hirschey",
+           role = c("aut", "cre"),
+           email = "matthew@hirschey.org",
+           comment = c(ORCID = "0000-0003-4541-5376")),
+    person(given = "Akshay",
+           family = "Bareja",
+           role = c("aut", "ctb"),
+           email = "akshay.bareja@duke.edu",
+           comment = c(ORCID = "0000")))
+Description: Supporting materials for a course on data science. It contains several sample data sets and some utility functions for data analysis and graphing.
+License: MIT + file LICENSE
+Depends: R (>= 3.1)
+Imports:
+    ggplot2,
+    dplyr,
+    tidyr,
+    readr,
+    tibble,
+    stringr
+Suggests: 
+    knitr, 
+    rmarkdown
+VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
+URL: http://tidybiology.org
+RoxygenNote: 6.1.1
