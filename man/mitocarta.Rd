@@ -57,6 +57,6 @@
 data(mitocarta)
 }
 \description{
-MitoCarta2.0 is an inventory of 1158 human and mouse genes encoding proteins with strong support of mitochondrial localization. To generate this inventory, we performed mass spectrometry of mitochondria isolated from fourteen tissues, assessed protein localization through large-scale GFP tagging/microscopy, and integrated these results with six other genome-scale datasets of mitochondrial localization, using a Bayesian approach. MitoCarta2.0, released 2015, is an update from the MitoCarta1.0 inventory published in Cell, 2008.
+MitoCarta2.0 is an inventory of 1158 human genes encoding proteins with strong support of mitochondrial localization. To generate this inventory, the Mootha lab at MGH performed mass spectrometry of mitochondria isolated from fourteen tissues, assessed protein localization through large-scale GFP tagging/microscopy, and integrated these results with six other genome-scale datasets of mitochondrial localization, using a Bayesian approach. MitoCarta2.0, released 2015, is an update from the MitoCarta1.0 inventory published in Cell, 2008.
 }
 \keyword{datasets}
