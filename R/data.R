@@ -1,8 +1,8 @@
-#' Human Genome Summary
+#' Human chromosome summary
 #'
-#' A dataset containing summary information of the human genome.
+#' A dataset containing summary information of the human chromosomes
 #'
-#' @usage data(genome)
+#' @usage data(chromosome)
 #'
 #' @docType data
 #'
@@ -27,7 +27,7 @@
 #' @keywords datasets
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Human_genome}
-"genome"
+"chromosome"
 
 
 #' Mitocarta: an inventory of mammalian mitochondrial genes
