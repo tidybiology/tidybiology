@@ -32,5 +32,9 @@ chromosome$centromereposition_mbp <- as.numeric(chromosome$centromereposition_mb
 chromosome_levels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y")
 chromosome$id <- fct_relevel(chromosome$id, chromosome_levels)
 
+simplechromosome <- chromosome %>%
+  select(id, basepairs)
+
 write_csv(chromosome, path = here::here("data-raw", "chromosome.csv"))
 usethis::use_data(chromosome, overwrite = TRUE, compress = 'xz')
+usethis::use_data(simplechromosome, overwrite = TRUE, compress = 'xz')

@@ -30,6 +30,26 @@
 "chromosome"
 
 
+#' simplechromosome
+#'
+#' A dataset containing simple chromosome information of the human chromosomes and number of basepairs
+#'
+#' @usage data(simplechromosome)
+#'
+#' @docType data
+#'
+#' @format A data frame with 24 rows and 2 variables:
+#' \describe{
+#'   \item{id}{Identified for each of the 23 chromosome pairs in cell nuclei, including the X and Y chromosome; mitochondrial DNA is excluded.}
+#'   \item{basepairs}{Number of base pairs, based on a reference genome that does not represent the sequence of any specific individual (Data source: Ensembl genome browser release 87, December 2016 for most values).}
+#' }
+#'
+#' @keywords datasets
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Human_genome}
+"simplechromosome"
+
+
 #' Mitocarta: an inventory of mammalian mitochondrial genes
 #'
 #' MitoCarta2.0 is an inventory of 1158 human genes encoding proteins with strong support of mitochondrial localization. To generate this inventory, the Mootha lab at MGH performed mass spectrometry of mitochondria isolated from fourteen tissues, assessed protein localization through large-scale GFP tagging/microscopy, and integrated these results with six other genome-scale datasets of mitochondrial localization, using a Bayesian approach. MitoCarta2.0, released 2015, is an update from the MitoCarta1.0 inventory published in Cell, 2008.
