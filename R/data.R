@@ -243,3 +243,26 @@
 #'
 #' @source \url{https://www.uniprot.org/uniprot/?query=*&fil=organism%3A%22Homo+sapiens+%28Human%29+%5B9606%5D%22+AND+reviewed%3Ayes}
 "proteins"
+
+
+#' subcell
+#'
+#' A dataset containing protein subcellular localization and complex information.
+#'
+#' @usage data(subcell)
+#'
+#' @docType data
+#'
+#' @format A data frame with 1,154,431 rows and 5 variables:
+#' \describe{
+#'   \item{ensembl_prot_id}{Official Ensembl protein ID}
+#'   \item{gene_name}{Official gene name}
+#'   \item{go_term}{Gene Ontology Term}
+#'   \item{location}{Subcellular Location}
+#'   \item{score}{Integrated subcellular location score}
+#'   }
+#'
+#' @keywords datasets
+#'
+#' @source \url{https://compartments.jensenlab.org/Downloads}
+"subcell"

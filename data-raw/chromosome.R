@@ -16,8 +16,8 @@ chromosome <- as_tibble(chromosome, .name_repair = "minimal") %>%
   rename(id = chromosome)
 
 chromosome <- chromosome %>%
-  filter(!str_detect(chromosome, "mtDNA")) %>% #remove mitochondrial dna
-  filter(!str_detect(chromosome, "total")) %>%
+  filter(!str_detect(id, "mtDNA")) %>% #remove mitochondrial dna
+  filter(!str_detect(id, "total")) %>%
   select(-links) %>%
   select(-cumulative_percent)
 
