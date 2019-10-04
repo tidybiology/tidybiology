@@ -1,7 +1,7 @@
 Package: tidybiology
 Type: Package
 Title: Utility Functions and Data Sets for Tidy Biology
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: c(
     person(given = "Matthew",
            family = "Hirschey",
