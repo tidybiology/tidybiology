@@ -12,7 +12,9 @@ chromosome <- url %>%
 
 chromosome <- chromosome[[1]]
 chromosome <- as_tibble(chromosome, .name_repair = "minimal") %>%
-  clean_names()
+  clean_names() %>%
+  rename(id = chromosome)
+
 chromosome <- chromosome %>%
   filter(!str_detect(chromosome, "mtDNA")) %>% #remove mitochondrial dna
   filter(!str_detect(chromosome, "total")) %>%
@@ -28,7 +30,7 @@ chromosome$variations <- as.numeric(chromosome$variations)
 chromosome$centromereposition_mbp <- as.numeric(chromosome$centromereposition_mbp)
 
 chromosome_levels <- c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y")
-chromosome$chromosome <- fct_relevel(chromosome$chromosome, chromosome_levels)
+chromosome$id <- fct_relevel(chromosome$id, chromosome_levels)
 
 write_csv(chromosome, path = here::here("data-raw", "chromosome.csv"))
 usethis::use_data(chromosome, overwrite = TRUE, compress = 'xz')

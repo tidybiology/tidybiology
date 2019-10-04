@@ -3,3 +3,4 @@
 .here
 ^data-raw$
 ^README\.Rmd$
+^tmp$

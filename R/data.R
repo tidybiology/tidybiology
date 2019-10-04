@@ -8,7 +8,7 @@
 #'
 #' @format A data frame with 24 rows and 14 variables:
 #' \describe{
-#'   \item{chromosome}{Characters of the 23 chromosome pairs in cell nuclei, including the X and Y chromosome; mitochondrial DNA is excluded.}
+#'   \item{id}{Identified for each of the 23 chromosome pairs in cell nuclei, including the X and Y chromosome; mitochondrial DNA is excluded.}
 #'   \item{length_mm}{Chromosome length calculated by multiplying the number of base pairs by 0.34 nanometers, the distance between base pairs in the DNA double helix.}
 #'   \item{basepairs}{Number of base pairs, based on a reference genome that does not represent the sequence of any specific individual (Data source: Ensembl genome browser release 87, December 2016 for most values).}
 #'   \item{variations}{Number of variations of unique DNA sequence differences that have been identified in the individual human genome sequences analyzed by Ensembl as of December 2016.}
@@ -189,4 +189,32 @@
 #'
 #' @source \url{https://www.omim.org/downloads/}
 "omim_morbidmap"
+
+
+#' genes
+#'
+#' A dataset containing Ensembl's unique genes in the Human Genome (GRCh38.p13) and other associated information.
+#'
+#' @usage data(genes)
+#'
+#' @docType data
+#'
+#' @format A data frame with 61,187 rows and 11 variables:
+#' \describe{
+#'   \item{gene_name}{Official gene name}
+#'   \item{gene_description}{Gene name and description}
+#'   \item{chromosome_scaffold_name}{Genome assemblies are hierarchical. The shortest assembly components are contigs, which are sequences taken from individuals. Contigs are assembled into longer scaffolds, and scaffolds are assembled into chromosomes if there is sufficient mapping information. Many genome assemblies have only been assembled to the scaffold level.}
+#'   \item{strand}{Indicates if gene is on positive or negative strand}
+#'   \item{transcript_start_bp}{Position of gene start}
+#'   \item{transcript_end_bp}{Position of gene end}
+#'   \item{transcript_length}{Transcript length (including UTRs and CDS)}
+#'   \item{gene_percent_gc_content}{Gene % GC content}
+#'   \item{gene_stable_id}{Stable gene identifiers are ways that Ensembl labels genes in their database. Unlike gene names which can change as a result of improvements in scientific knowledge, stable identifiers should continue to refer to the same genomic features.}
+#'   \item{transcript_stable_id}{Stable transcript identifiers are ways that Ensembl labels transripts in their database.}
+#'   }
+#'
+#' @keywords datasets
+#'
+#' @source \url{https://www.ensembl.org/index.html}
+"genes"
 
