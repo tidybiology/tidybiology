@@ -1,4 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
-\tmp
+/tmp
+.DS_Store
