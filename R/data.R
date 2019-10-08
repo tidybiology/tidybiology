@@ -121,11 +121,11 @@
 #'
 #' @format A data frame with 26,445 rows and 5 variables:
 #' \describe{
-#'   \item{number_mim_number}{Each OMIM entry is given a unique six-digit number.}
+#'   \item{gene_name}{Official gene symbol from HGNC.}
+#'   \item{gene_id_entrez}{Official Entrez gene ID from NCBI.}
+#'   \item{gene_id_ensembl}{Official gene ID from Ensembl.}
+#'   \item{mim_number}{Each OMIM entry is given a unique six-digit number.}
 #'   \item{mim_entry_type}{Gene indicates that the entry contains the description of a gene of known sequence and a phenotype. See other types at faq 1.3 at https://omim.org help faq for more types.}
-#'   \item{entrez_gene_id_ncbi}{Official Entrez gene ID from NCBI.}
-#'   \item{approved_gene_symbol_hgnc}{Official gene symbol from HGNC.}
-#'   \item{ensembl_gene_id_ensembl}{Official gene ID from Ensembl.}
 #' }
 #'
 #' @keywords datasets
@@ -267,19 +267,19 @@
 
 #' subcell
 #'
-#' A dataset containing protein subcellular localization and complex information.
+#' A dataset containing cleaned protein subcellular localization information.
 #'
 #' @usage data(subcell)
 #'
 #' @docType data
 #'
-#' @format A data frame with 1,154,431 rows and 5 variables:
+#' @format A data frame with 20,840 rows and 5 variables:
 #' \describe{
 #'   \item{ensembl_prot_id}{Official Ensembl protein ID}
 #'   \item{gene_name}{Official gene name}
 #'   \item{go_term}{Gene Ontology Term}
-#'   \item{location}{Subcellular Location}
 #'   \item{score}{Integrated subcellular location score}
+#'   \item{location}{Subcellular Location}
 #'   }
 #'
 #' @keywords datasets
