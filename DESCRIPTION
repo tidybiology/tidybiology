@@ -17,15 +17,15 @@ Description: Supporting materials for a course on data science. It contains seve
 License: MIT + file LICENSE
 Depends: R (>= 3.1)
 Imports:
+Suggests: 
+    knitr, 
+    rmarkdown, 
     ggplot2,
     dplyr,
     tidyr,
     readr,
     tibble,
     stringr
-Suggests: 
-    knitr, 
-    rmarkdown
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

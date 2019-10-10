@@ -4,13 +4,13 @@
 \name{subcell}
 \alias{subcell}
 \title{subcell}
-\format{A data frame with 1,154,431 rows and 5 variables:
+\format{A data frame with 20,840 rows and 5 variables:
 \describe{
   \item{ensembl_prot_id}{Official Ensembl protein ID}
   \item{gene_name}{Official gene name}
   \item{go_term}{Gene Ontology Term}
-  \item{location}{Subcellular Location}
   \item{score}{Integrated subcellular location score}
+  \item{location}{Subcellular Location}
   }}
 \source{
 \url{https://compartments.jensenlab.org/Downloads}
@@ -19,6 +19,6 @@
 data(subcell)
 }
 \description{
-A dataset containing protein subcellular localization and complex information.
+A dataset containing cleaned protein subcellular localization information.
 }
 \keyword{datasets}
