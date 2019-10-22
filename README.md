@@ -27,7 +27,7 @@ reproducibly analyze and visualize data across the biological sciences.
 
 ## Installation
 
-You cannot yet install the released version of tidybiology from
+You **cannot** yet install the released version of tidybiology from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
@@ -61,3 +61,8 @@ plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
+
+To do list:  
+\* Add continuious integration  
+\* Add helper functions  
+\* Split datasets into multiple single-purpose packages?

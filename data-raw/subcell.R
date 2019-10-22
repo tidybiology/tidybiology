@@ -44,7 +44,9 @@ subcell <- subcell_full %>%
   rename(location = location_simple) %>%
   arrange(gene_name)
 
-write_csv(subcell, path = here::here("data-raw", "subcell.csv"))
+#run to generate csv; commented out due to size
+#write_csv(subcell, path = here::here("data-raw", "subcell.csv"))
+
 #write_csv(subcell_full, path = here::here("data-raw", "subcell_full.csv"))
 
 usethis::use_data(subcell, overwrite = TRUE, compress = 'xz')

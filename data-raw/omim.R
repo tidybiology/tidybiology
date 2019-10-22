@@ -36,10 +36,11 @@ omim_morbidmap <- read_tsv(path4, col_names = TRUE, skip = 3) %>%
 #omim_morbidmap$phenotype_mapping <- str_remove_all(omim_morbidmap$phenotype_mapping, "\\(")
 #omim_morbidmap$phenotype_mapping <- str_remove_all(omim_morbidmap$phenotype_mapping, "\\)")
 
+#run to generate csv; commented out due to size
 #write_csv(omim_mim2gene, path = here::here("data-raw", "omim_mim2gene.csv"))
-write_csv(omim_mimtitles, path = here::here("data-raw", "omim_mimtitles.csv"))
-write_csv(omim_genemap, path = here::here("data-raw", "omim_genemap.csv"))
-write_csv(omim_morbidmap, path = here::here("data-raw", "omim_morbidmap.csv"))
+#write_csv(omim_mimtitles, path = here::here("data-raw", "omim_mimtitles.csv"))
+#write_csv(omim_genemap, path = here::here("data-raw", "omim_genemap.csv"))
+#write_csv(omim_morbidmap, path = here::here("data-raw", "omim_morbidmap.csv"))
 
 #usethis::use_data(omim_mim2gene, overwrite = TRUE, compress = 'xz')
 usethis::use_data(omim_mimtitles, overwrite = TRUE, compress = 'xz')

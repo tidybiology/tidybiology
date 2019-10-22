@@ -22,7 +22,7 @@ This package accompanies a workshop-style class that provides an introduction to
 
 ## Installation
 
-You cannot yet install the released version of tidybiology from [CRAN](https://CRAN.R-project.org) with:
+You **cannot** yet install the released version of tidybiology from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("tidybiology")
@@ -51,3 +51,8 @@ data(simplechromosome)
 #simple plot
 plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
 ```
+  
+To do list:  
+* Add continuious integration  
+* Add helper functions  
+* Split datasets into multiple single-purpose packages?  

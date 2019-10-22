@@ -12,6 +12,6 @@ mitocarta <- read_tsv(url, col_names = TRUE) %>%
 
 mitocarta$MCARTA2_LIST <- if_else(mitocarta$MCARTA2_LIST == 1, TRUE, FALSE)
 
-
-write_csv(mitocarta, path = here::here("data-raw", "mitocarta.csv"))
+#run to generate csv; commented out due to size
+#write_csv(mitocarta, path = here::here("data-raw", "mitocarta.csv"))
 usethis::use_data(mitocarta, overwrite = TRUE, compress = 'xz')

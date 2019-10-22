@@ -1,0 +1,44 @@
+---
+title: "intro"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE, warning = FALSE, include = FALSE}
+library(tidybiology)
+datasets <- data(package = "tidybiology")$result[, "Item"]
+```
+## TidyBiology: An Introduction to Biological Data Science in R
+Tidybiology is workshop-style series that provides an introduction to the emerging field of Data Science in R, including data analysis and visualization, with a particular focus on its utility for biological insight. Students will be provided with biological datasets using the `tidybiology` package, and introduced to the `tidyverse` R packages and code to examine data.  
+  
+### Viewing datasets
+This package currently contains ```r length(datasets)``. To see the datasets currently contained within the `tidybiology` package:  
+```{r packages, echo=TRUE}
+library(tidybiology) #load the library
+data(package = "tidybiology")
+```
+
+```{r printpackages, echo=FALSE}
+print(datasets)
+```
+  
+### Using datasets
+To load a dataset, simple use the `data()` function:
+```{r load}
+data(simplechromosome)
+```
+  
+Make a simple plot, as you would:  
+```{r plot}
+plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
+```

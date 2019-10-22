@@ -11,7 +11,7 @@ Supporting materials for a course on data science. It contains several sample da
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://tidybiology.org}
+  \item \url{https://github.com/hirscheylab/tidybiology}
 }
 
 }

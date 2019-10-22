@@ -17,5 +17,6 @@ genes$chromosome_scaffold_name <- str_remove_all(genes$chromosome_scaffold_name,
 genes <- genes %>%
   arrange(chromosome_scaffold_name, transcript_start_bp)
 
-write_csv(genes, path = here::here("data-raw", "genes.csv"))
+#run to generate csv; commented out due to size
+#write_csv(genes, path = here::here("data-raw", "genes.csv"))
 usethis::use_data(genes, overwrite = TRUE, compress = 'xz')

@@ -3,3 +3,4 @@
 .RData
 /tmp
 .DS_Store
+inst/doc

@@ -35,6 +35,8 @@ chromosome$id <- fct_relevel(chromosome$id, chromosome_levels)
 simplechromosome <- chromosome %>%
   select(id, basepairs)
 
-write_csv(chromosome, path = here::here("data-raw", "chromosome.csv"))
+#run to generate csv; commented out due to size
+#write_csv(chromosome, path = here::here("data-raw", "chromosome.csv"))
+
 usethis::use_data(chromosome, overwrite = TRUE, compress = 'xz')
 usethis::use_data(simplechromosome, overwrite = TRUE, compress = 'xz')

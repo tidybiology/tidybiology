@@ -12,5 +12,6 @@ proteins <- read_tsv(here::here("tmp", "uniprot-filtered-organism%3A%22Homo+sapi
   separate(protein_names, into = c("protein_name", "protein_name_alt"), sep = "\\(", extra = "merge", fill = "right") %>%
   arrange(gene_name)
 
-write_csv(proteins, path = here::here("data-raw", "proteins.csv"))
+#run to generate csv; commented out due to size
+#write_csv(proteins, path = here::here("data-raw", "proteins.csv"))
 usethis::use_data(proteins, overwrite = TRUE, compress = 'xz')
