@@ -1,8 +1,8 @@
 ---
-title: "intro"
+title: "Introduction to tidybiology"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{intro}
+  %\VignetteIndexEntry{Introduction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 library(tidybiology)
 datasets <- data(package = "tidybiology")$result[, "Item"]
 ```
-## TidyBiology: An Introduction to Biological Data Science in R
-Tidybiology is workshop-style series that provides an introduction to the emerging field of Data Science in R, including data analysis and visualization, with a particular focus on its utility for biological insight. Students will be provided with biological datasets using the `tidybiology` package, and introduced to the `tidyverse` R packages and code to examine data.  
+## `tidybiology`: An Introduction to Biological Data Science in R
+Tidybiology is workshop-style series of lectures that provides an introduction to the emerging field of Data Science in R, including data analysis and visualization, with a particular focus on its utility for biological insight. This series is designed to be either self-taught or lectures for in-person learning. The `tidybiology` package provides biological datasets to be used along side the `tidyverse` R packages and code.  
   
 ### Viewing datasets
-This package currently contains ```r length(datasets)``. To see the datasets currently contained within the `tidybiology` package:  
+This package currently contains `r length(datasets)` datasets. To see the datasets currently contained within the `tidybiology` package:  
 ```{r packages, echo=TRUE}
 library(tidybiology) #load the library
 data(package = "tidybiology")
@@ -38,7 +38,7 @@ To load a dataset, simple use the `data()` function:
 data(simplechromosome)
 ```
   
-Make a simple plot, as you would:  
+Make a simple plot, by calling the loaded dataframe:  
 ```{r plot}
 plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
 ```
