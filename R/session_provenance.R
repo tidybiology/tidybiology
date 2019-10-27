@@ -15,12 +15,16 @@
 
 session_provenance <- function(){
   z <- list(R.Version())
-  y <- tibble::tibble(search()) %>% dplyr::rename(package = `search()`) %>% dplyr::filter(stringr::str_detect(.data$package, "package"))
+  x <- base::search()
+  y <- tibble::tibble(x)
+  y <- y %>%
+    dplyr::rename(package = `search()`) %>%
+    dplyr::filter(stringr::str_detect(.data$package, "package"))
   y$package <- stringr::str_remove_all(y$package, "package\\:")
   y <- dplyr::mutate(y, description = lapply(y$package, packageDescription, encoding = NA))
   y <- dplyr::mutate(y, base = dplyr::if_else(purrr::map(y$description, function(x) !is.null(x$Priority) &&
                                 x$Priority == "base") == TRUE, TRUE, FALSE))
-  y <- dplyr::mutate(y, version = purrr::map(y$description, purrr::pluck("Version")) %>% purrr::flatten_chr(.data))
+  y <- dplyr::mutate(y, version = purrr::flatten_chr(purrr::map(y$description, purrr::pluck("Version"))))
 
   base_packages <- y %>%
     dplyr::filter(.data$base == TRUE) %>%
@@ -41,8 +45,9 @@ session_provenance <- function(){
     os = purrr::pluck(z, 1, "os"),
     locale = Sys.getlocale(),
     base_packages = base_packages,
-    installed_packages = installed_packages) %>%
-    t(.data)
+    installed_packages = installed_packages)
+
+  session <- t(session)
 
   colnames(session) <- c("Session Info")
 
