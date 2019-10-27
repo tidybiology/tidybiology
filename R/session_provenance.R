@@ -15,7 +15,7 @@
 
 session_provenance <- function(){
   z <- list(R.Version())
-  y <- tibble::tibble(base::search()) %>% dplyr::rename(package = `search()`) %>% dplyr::filter(stringr::str_detect(.data$package, "package"))
+  y <- tibble::tibble(search()) %>% dplyr::rename(package = `search()`) %>% dplyr::filter(stringr::str_detect(.data$package, "package"))
   y$package <- stringr::str_remove_all(y$package, "package\\:")
   y <- dplyr::mutate(y, description = lapply(y$package, packageDescription, encoding = NA))
   y <- dplyr::mutate(y, base = dplyr::if_else(purrr::map(y$description, function(x) !is.null(x$Priority) &&
