@@ -16,15 +16,18 @@ Authors@R: c(
 Description: Supporting materials for a course on data science. It contains several sample data sets and some utility functions for data analysis and graphing.
 License: MIT + file LICENSE
 Depends: R (>= 3.1)
+Imports: 
+    utils,
+    dplyr, 
+    purrr, 
+    stringr, 
+    tibble, 
+    rlang
 Suggests: 
     knitr,
     rmarkdown,
-    ggplot2,
-    dplyr,
     tidyr,
     readr,
-    tibble,
-    stringr,
     spelling
 VignetteBuilder: knitr
 Encoding: UTF-8

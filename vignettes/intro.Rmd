@@ -35,7 +35,7 @@ print(datasets)
 ### Using datasets
 To load a dataset, simple use the `data()` function:
 ```{r load}
-data(simplechromosome)
+data("simplechromosome")
 ```
   
 Make a simple plot, by calling the loaded dataframe:  
