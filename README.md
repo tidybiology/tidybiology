@@ -49,20 +49,12 @@ To see the datasets currently contained within this package:
 ``` r
 #to load the library
 library(tidybiology)
-
 #to see the datasets within this package
 data(package = "tidybiology")
-
 #to load a dataset
 data(simplechromosome)
-
 #simple plot
 plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
-
-To do list:  
-\* Add continuious integration  
-\* Add helper functions  
-\* Split datasets into multiple single-purpose packages?

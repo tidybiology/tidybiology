@@ -13,7 +13,7 @@ Authors@R: c(
            role = c("aut", "ctb"),
            email = "akshay.bareja@duke.edu",
            comment = c(ORCID = "0000")))
-Description: Supporting materials for a course on data science. It contains several sample data sets and some utility functions for data analysis and graphing.
+Description: This package contains some utility functions for data analysis and graphing, several sample data sets, and some supporting materials for a course on data science.
 License: MIT + file LICENSE
 Depends: R (>= 3.1)
 Imports: 
