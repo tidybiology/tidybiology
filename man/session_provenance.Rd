@@ -7,7 +7,7 @@
 session_provenance()
 }
 \description{
-This function allows you to easilty print relevant session information, but not unloaded packages, for provenance and reproducibility.
+This function allows you to easily print relevant session information, but not unloaded packages, for provenance and reproducibility.
 }
 \author{
 Matthew Hirschey, \email{matthew@hirschey.org}
