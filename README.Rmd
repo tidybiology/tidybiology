@@ -24,13 +24,13 @@ This package accompanies a workshop-style class that provides an introduction to
 
 You **cannot** yet install the released version of tidybiology from [CRAN](https://CRAN.R-project.org) with:
 
-``` r
+```{r eval=FALSE}
 install.packages("tidybiology")
 ```
 
 So in the meantime, use the development version from [GitHub](https://github.com/) with:
 
-``` r
+```{r eval=FALSE}
 # install.packages("devtools")
 devtools::install_github("hirscheylab/tidybiology")
 ```
@@ -41,10 +41,13 @@ To see the datasets currently contained within this package:
 ```{r example}
 #to load the library
 library(tidybiology)
+
 #to see the datasets within this package
 data(package = "tidybiology")
+
 #to load a dataset
 data(simplechromosome)
+
 #simple plot
 plot(simplechromosome, xlab = "Chromosome", ylab = "Number of Basepairs")
 ```
