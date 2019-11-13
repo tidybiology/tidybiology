@@ -44,7 +44,7 @@ devtools::install_github("hirscheylab/tidybiology")
 
 ## Example
 
-To see the datasets currently contained within this package:
+To see the datasets contained within this package:
 
 ``` r
 #to load the library

@@ -50,11 +50,11 @@
 "simplechromosome"
 
 
-#' tidyid
+#' id
 #'
 #' A dataset with gene summary information, as well as linking MIM numbers, NCBI Gene IDs, Uniprot IDs, and HGNC Approved Gene Symbols.
 #'
-#' @usage data(tidyid)
+#' @usage data(id)
 #'
 #' @docType data
 #'
@@ -76,4 +76,4 @@
 #' @keywords datasets
 #'
 #' @source \url{https://www.ncbi.nlm.nih.gov}
-"tidyid"
+"id"

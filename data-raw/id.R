@@ -85,4 +85,4 @@ create_gene_summary(gene_names_url, opt$entrezkey,
 
 #run to generate csv; commented out due to size
 #write_csv(tidyid, path = here::here("data-raw", "tidyid.csv"))
-usethis::use_data(tidyid, overwrite = TRUE, compress = 'xz')
+usethis::use_data(id, overwrite = TRUE, compress = 'xz')

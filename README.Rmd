@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+library(tidyverse)
 ```
 
 # tidybiology
@@ -36,7 +37,7 @@ devtools::install_github("hirscheylab/tidybiology")
 ```
 ## Example
 
-To see the datasets currently contained within this package:
+To see the datasets contained within this package:
 
 ```{r example}
 #to load the library
