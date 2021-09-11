@@ -4,11 +4,13 @@
 \name{simplechromosome}
 \alias{simplechromosome}
 \title{simplechromosome}
-\format{A data frame with 24 rows and 2 variables:
+\format{
+A data frame with 24 rows and 2 variables:
 \describe{
   \item{id}{Identified for each of the 23 chromosome pairs in cell nuclei, including the X and Y chromosome; mitochondrial DNA is excluded.}
   \item{basepairs}{Number of base pairs, based on a reference genome that does not represent the sequence of any specific individual (Data source: Ensembl genome browser release 87, December 2016 for most values).}
-}}
+}
+}
 \source{
 \url{https://en.wikipedia.org/wiki/Human_genome}
 }

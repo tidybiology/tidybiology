@@ -4,7 +4,9 @@
 \name{chromosome}
 \alias{chromosome}
 \title{Human chromosome summary}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 24 rows and 14 columns.}
+\format{
+
+}
 \source{
 \url{https://en.wikipedia.org/wiki/Human_genome}
 }
