@@ -1,28 +1,63 @@
 ---
-title: "Placeholder"
-output: html_document
+title: "Class 1 Homework"
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Load libraries
+```{r setup}
+library(tidyverse)
+library(tidybiology)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Import data
+This is the code chunk that imports data. We will discuss how this code works in the next few sessions. All you need to know for now is that this imports an `R object` into your environment. Look to the right at the "Environment" tab and see a new object called `chromosome`. 
+```{r import}
+data("chromosome")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Take a `glimpse` into the kinds of data in the dataframe
+The `chromosome` object is a table (also called a dataframe), that has a series of columns and rows. The function `glimpse()` perfroms a quick peek at the data. We can see that this table has 14 columns (called 'Variables'), and 24 rows (called 'Observations'). The name of each Variable is listed below (e.g. 'id', 'length_mm', etc.). Importantly, R cares about capitalization, so `id` is NOT the same as `ID`. The type of variable is listed next (e.g. <fct>, <dbl>, etc.), but you don't need to worry about these yet. Lastly, the first few observations are listed.  
+  
+```{r glimpse}
+glimpse(chromosome)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Another way to View the `chromosome` table object is to run the view function. This is one of the odd functions in R that starts with a capital letter. Viewing the table will open a new tab in Rstudio to see all the data. This works great for small tables (24x14), but will crash R with big tables (100,000 x 100,000). To view this table, type in the console below: View(chromosome)  
+  
+Understanding where your data come from, and how your data are structured is one of the most important things in Data Science. This table was scraped from: https://en.wikipedia.org/wiki/Human_genome. Go to a web browser to look at the original source.  
+  
+## My first graph  
+Now we will make your first graph. Run the code chunk below to generate the image, and then continue reading about what each part of the code does.  
+`ggplot` is the function  
+`geom_point` is the type of graph - scatterplot with points, in this case  
+`labs` is the layer for **lab**els  
+`theme_minimal` is an easy layer to change several of the visual features of the graph  
+`scale_y_continuous` allows me to change the scale to make it more readable  
+`NULL` doesn't add anything to the graph, but allows you to comment out (#) layers without breaking the graph; if you break the graph and R is not responding, it's likely that `R` is waiting for another command; just hit `esc` on your keyboard to start over.  
+
+```{r first_graph}
+ggplot(chromosome, aes(x = id, y = basepairs)) +
+  geom_point(color = "darkblue", size = 3) +
+  labs(x = "Chromosome", y = "Basepairs (Millions)", title = "Number of Basepairs for Each Human Chromosome", caption = "Data from Wikipedia | Plot from @hirscheylab") +
+  theme_minimal() +
+  scale_y_continuous(labels = c(50, 100, 150, 200, 250)) +
+  NULL
+```
+
+## This project has two final parts:  
+1. One-by-one, comment out lines in the code chunk above. Figure out what each line of code does.
+  
+```{r quiz}
+#Q: Which line is responsible for plotting the data on the graph?  
+#A: 
+```
+
+2. Make your own graph in the code chunk below. Use the code from the `{r first_graph}` code chunk. Copying and pasting is OK! Look at the different variables that are available for plotting by inspecting the `{r glimpse}` code chunk. Feel free to experiment and plot different information.  
+* change the variable, if you'd like; the original plot compared chromosome id # vs. Basepairs, but 12 other variables are unused.  
+* change the color of the points (be resourceful to find color names useable in `R`)   
+* change the size of the points to something bigger
+* finalize the labels (title, axes, caption) based on what you changed, and to reflect that you made it!  
+* get creative; use cheatsheets or other resources to change other elements of this graph  
+ 
+```{r second_graph}
+#your code goes here
+
+```
