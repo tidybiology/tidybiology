@@ -1,0 +1,93 @@
+---
+title: "Data Transformation with dplyr & stringr + ggplot2 HW"
+author: "Junqi Lu"
+
+output:
+  html_document: 
+    
+    toc: true 
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: false 
+      
+    number_sections: true 
+    
+    theme: paper 
+    
+    output: 
+      fig_width: 10 
+      fig_height: 8 
+      fig_caption: true 
+      dev: svg 
+    
+    #Dataframe printing
+    df_print: paged 
+    
+    code_folding: show 
+  
+  pdf_document: default
+---
+# Load data
+```{r}
+library('scRNAseq')
+scRNAData <- scRNAseq #Because ggplot2 builder needs the dataset to be in the Environment
+```
+
+## Preview data structure 
+```{r}
+library('dplyr')
+glimpse(scRNAData)
+```
+
+```{r}
+head(scRNAData,4) #Dummy datasets will be generated from these 4 rows
+```
+
+# Generate dummy df
+```{r}
+heart <- scRNAData[scRNAData$organ=='heart',]
+brain <- scRNAData[scRNAData$organ=='brain',]
+kidney <- scRNAData[scRNAData$organ=='kidney',]
+```
+
+# Does the original df have any transcript appeared in more than 1 organ?
+
+* Clue for more than 2 df join(): try to use %>%
+```{r}
+
+```
+
+
+# Assembly the df from 3 organs together in a proper way and name the new df as three_organ_df
+```{r}
+
+```
+
+# FIlter the genes from heart out from three_organ_df 
+
+* You can use either a join function or a negated %in% (__`%!in%` <- Negate(`%in%`)__)
+* If you want to use a join function, make sure you understand which is the "left" and which is the "right"
+```{r}
+
+```
+
+# Conditional coloring in ggplot by stringr pattern detect 
+## What gene types do you have in scRNAData? 
+```{r}
+sort(table(scRNAData$gene_type), decreasing = TRUE)
+```
+
+## What is the average transcript lengthn for non-pseudogenes from brain? Make a plot to answer this. 
+
+Additional requirements: 
+
+* Filter the scRNAData by transcript length by a range that you think is reasonable to remove potential artifacts
+* Change the x-axis label of a boxplot to __Pseudogenes__ if its gene type belongs to pseudogenes or __Non-pseudogenes__ if not
+* Use the organ label to fill in the color of boxplots. If a gene is from brain, label it as __Brain-related__; if not from brain, label it as __Other-organs-related__
+
+```{r}
+
+```
+
+
+
