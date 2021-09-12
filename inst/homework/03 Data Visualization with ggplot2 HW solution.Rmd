@@ -1,0 +1,214 @@
+---
+title: "ggplot2 HW solution"
+author: "Junqi Lu"
+
+output:
+  html_document: 
+    
+    toc: true 
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: false 
+      
+    number_sections: true 
+    
+    theme: paper 
+    
+    output: 
+      fig_width: 10 
+      fig_height: 8 
+      fig_caption: true 
+      dev: svg 
+    
+    #Dataframe printing
+    df_print: paged 
+    
+    code_folding: hide 
+  
+  pdf_document: default
+---
+
+# Create a style you like to use later for all the other plots
+You need to load __ggplot2__ library before you define your style in a list. 
+```{r}
+library('ggplot2')
+
+MyStyle = list(
+  theme_linedraw() +
+    
+    
+    #Below is the style that my PI specifically likes
+    theme(
+      #For all the fonts, the default font is "Arial" and the all the sizes are in the units of pt
+      
+      plot.title = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 10, face = "bold", color = "black"),
+      panel.border = element_rect(size = 1.5, color = "black"),
+      
+      axis.line = element_line(colour = '1.5', size = 1.5),
+      #Jennifer likes the axis line to be of 1.5 pt thick
+      axis.title = element_text(size = 10, face = "bold"),
+      axis.text = element_text(size = 10, face = "bold"),
+      
+      strip.text.x = element_text(size = 10, face = "bold", color = "black"),
+      strip.text.y = element_text(
+        size = 10,
+        face = "bold",
+        color = "black",
+        angle = 0
+      ),
+      strip.background = element_blank(),
+      
+      legend.title = element_text(size = 10, face = "bold"),
+      legend.text = element_text(size = 9, face = "bold"),
+      legend.key.width = unit(10, "pt") #Control the size of the legend unit. Decrease this if you have a very wide legend, which is unnecessary
+    )
+  
+)
+```
+
+
+# Load data
+Load scRNAseq data from our library below. 
+```{r}
+library('scRNAseq')
+scRNAData <- scRNAseq #Because ggplot2 builder needs the dataset to be in the Environment
+```
+
+# Preview data structure by the method you prefer 
+```{r}
+library('dplyr')
+glimpse(scRNAData)
+```
+
+# Generate plots
+* For the questions below, feel free to use the __ggplot2 builder__ as an assistance.
+* Remember to label you axes and title your legends and plots properly.
+
+
+## Which gene type has a bigger transcript length? 
+Choose the range of transcript length that you think is reasonable to be used for the plot.  
+
+* The length might not make sense and thus can potentially be an artifact that you want to remove.    
+* You may need to adjust the plot width or turn the axis texts on x-axis with an angle to avoid overlapping.
+
+```{r}
+library(ggplot2)
+
+ggplot(scRNAData[scRNAData$transcript_length < 10000,]) +
+  aes(x = gene_type, y = transcript_length) +
+  geom_boxplot(shape = "circle") +
+  labs(title = "Transcript length vs. gene types",
+       x = "Gene types",
+       y = "Transcript length (bp)") +
+  MyStyle +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Which organ (excluding the "other" category) has a higher average transcript length? 
+Excluding extreme outliers by strategically filtering the data can help you focus more. 
+Also use __ggsignif__ to label out the p values of 2 organs that you're interested in color __red__ so people can easily observe whether the difference is significant. 
+```{r}
+library('ggsignif')
+
+ggplot(scRNAData[scRNAData$organ != 'other' &
+                   scRNAData$transcript_length < 20000,]) +
+  aes(x = organ, y = gene_percent_gc_content) +
+  geom_boxplot(shape = "circle", color = 'green') +
+  geom_signif(comparisons = list(c("brain", "heart")), color = 'red') +
+  labs(title = "GC content vs. organ types",
+       x = "Organ types",
+       y = "GC content (%)") +
+  MyStyle
+
+
+```
+
+## For the gene type that is expressed in more organ types, in which organ does that gene type have the highest average GC content? 
+Please use the __viridis__ coloring scheme here. 
+```{r}
+library('viridis')
+
+ggplot(scRNAData) +
+  aes(x = gene_type, y = gene_percent_gc_content, fill = organ) +
+  geom_boxplot(shape = "circle") +
+  scale_fill_hue(direction = 1) +
+  labs(title = "GC content vs. gene types",
+       x = "Gene types",
+       y = "GC content (%)") +
+  MyStyle +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_viridis(discrete = TRUE)
+```
+
+## Pick 2 cells that you like to compare
+Let's focus on the organ types other than "other". Do you think these 2 cells are more likely to be of the same cell type or different cell types? 
+
+Add marginal histograms around both axes by __ggExtra__. Adding a y=x line on the plot can help you approximate the correlation of these 2 cells' RNA. 
+
+* If same cell type, which organ(s) are they most likely coming from?
+* If different cell types, which organ(s) does each of the 2 cells might come from? 
+```{r}
+library('ggExtra')
+
+p1 <- ggplot(scRNAData[scRNAData$organ != 'other', ]) +
+  aes(x = cell_1, y = cell_8, color = organ) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_abline(intercept = 0,
+              color = 'green') + #As a reference of how different
+  labs(title = "Cell 8 vs. Cell 1 for expression profile",
+       x = "Cell 1",
+       y = "Cell 8") +
+  MyStyle
+
+ggExtra::ggMarginal(
+  p = p1,
+  type = 'histogram',
+  margins = 'both',
+  size = 5,
+  colour = 'black',
+  fill = 'gray'
+)
+```
+ 
+```{r}
+
+p2 <- ggplot(scRNAData[scRNAData$organ != 'other', ]) +
+  aes(x = cell_6, y = cell_8, color = organ) +
+  geom_point(shape = "circle", size = 1.5) +
+  geom_abline(intercept = 0,
+              color = 'green') + #As a reference of how different
+  labs(title = "Cell 8 vs. Cell 6 for expression profile",
+       x = "Cell 6",
+       y = "Cell 8") +
+  MyStyle
+
+ggExtra::ggMarginal(
+  p = p2,
+  type = 'histogram',
+  margins = 'both',
+  size = 5,
+  colour = 'black',
+  fill = 'gray'
+)
+```
+
+## Explore ggplot 2 extensions
+Discover a new ggplot2 extension from https://exts.ggplot2.tidyverse.org/gallery/ and try to use it below in a plot that you already made previously. 
+
+Suggestion: use __gghalves__ extension to change the right half of geom_boxplots into half violin plots for information about distribution. 
+```{r}
+library(gghalves)
+
+ggplot(scRNAData[scRNAData$organ != 'other' &
+                   scRNAData$transcript_length < 20000, ]) +
+  aes(x = organ, y = transcript_length) +
+  geom_half_boxplot(side = 'l') +
+  geom_half_violin(side = 'r') +
+  
+  labs(title = "Transcript length vs. organ types",
+       x = "Organ types",
+       y = "Transcript length (bp)") +
+  MyStyle
+```
+
