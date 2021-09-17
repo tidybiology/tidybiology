@@ -4,7 +4,8 @@
 \name{id}
 \alias{id}
 \title{id}
-\format{A data frame with 26,445 rows and 5 variables:
+\format{
+A data frame with 26,445 rows and 5 variables:
 \describe{
   \item{hgnc_id}{A unique ID provided by the HGNC for each gene with an approved symbol. IDs are of the format HGNC:n, where n is a unique number. HGNC IDs remain stable even if a name or symbol changes}
   \item{approved_symbol}{The official gene symbol approved by the HGNC, which is typically a short form of the gene name. Symbols are approved in accordance with the Guidelines for Human Gene Nomenclature}
@@ -17,7 +18,8 @@
   \item{omim_id_supplied_by_omim}{ID links to the Online Mendelian Inheritance in Man page for the gene. OMIM is described as a catalog of human genes and genetic phenotypes containing textual information, and links to MEDLINE, sequence records in the Entrez system, and additional related resource}
   \item{uni_prot_id_supplied_by_uni_prot}{The UniProt page for the encoded gene protein product. The UniProt Protein Knowledgebase is a curated protein sequence database that provides a high level of annotation, a minimal level of redundancy and high level of integration with other databases}
   \item{entrez_summary}{NCBI Entrez Gene summary manually curated and provided by RefSeq}
-}}
+}
+}
 \source{
 \url{https://www.ncbi.nlm.nih.gov}
 }

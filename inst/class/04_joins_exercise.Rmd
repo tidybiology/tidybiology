@@ -1,0 +1,192 @@
+---
+title: "Data Transformation with dplyr & stringr + ggplot2 workbook"
+author: "Junqi Lu"
+
+output:
+  html_document: 
+    
+    toc: true 
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: false 
+      
+    number_sections: true 
+    
+    theme: paper 
+    
+    output: 
+      fig_width: 10 
+      fig_height: 8 
+      fig_caption: true 
+      dev: svg 
+    
+    #Dataframe printing
+    df_print: paged 
+    
+    code_folding: show 
+  
+  pdf_document: default
+---
+
+Batch save plots (Advanced; skip for now)
+```{r}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  results = 'show',
+  fig.path = "OutputPlots/",
+  dev = c('svg', 'png'),
+  
+  
+  fig.width = 10,
+  #In the unit of inches
+  fig.height = 8,
+  #In the unit of inches
+  unit = "in"
+) 
+```
+
+# Load data
+```{r}
+
+```
+
+## Preview data structure 
+```{r}
+
+```
+
+```{r}
+
+```
+
+## Generate dummy data to for join() revisit
+```{r}
+
+```
+
+
+
+
+# join()
+## Mutating join()
+### Inner join() == intersection 
+![](join GIF\inner-join.gif)
+
+```{r}
+
+```
+
+### Outer join()
+left_join()
+![](join GIF\left-join.gif)
+
+```{r}
+
+```
+
+
+
+right_join()
+![](join GIF\right-join.gif)
+```{r}
+
+```
+
+
+full_join() == union 
+![](join GIF\full-join.gif)
+```{r}
+
+```
+
+
+## Filtering join()
+### semi_join()
+![](join GIF\semi-join.gif)
+```{r}
+
+```
+You basically use the keys from right df to filter on the rows in left df and only keep the rows from the left df that have ID already existing in the right df. Is there a more direct method? 
+```{r}
+
+
+```
+
+
+### anti_join()
+![](join GIF\anti-join.gif)
+```{r}
+
+```
+You basically use the keys from right df to filter on the rows in left df but keep the ones with an ID that doesn't exist in the right df. Is there a more direct method? 
+```{r}
+`%!in%` <- Negate(`%in%`) #Negate() returns a negated function of the target function 
+
+```
+
+# DataFrames binding/assembly
+## bind_rows()
+Returns tables one on top of the other as a single table. 
+```{r}
+
+```
+
+
+## bind_cols()
+Returns tables placed side by side as a single table. 
+
+* Column lengths must be equal and they will not be matched by id (to do so use join())
+* If both df have columns of the same names, a number will be added to be the new column names t oavoid confusions in the indexing system. 
+```{r}
+
+```
+
+# Data transformation on the run for ggplot2
+```{r}
+
+```
+
+## Data filtering by df subseting  
+If I want to investigate on the potential relationship between the organ and GC content, but I'm only interested in certain types of organ and RNA types
+```{r}
+
+```
+
+```{r}
+`%!in%` <- Negate(`%in%`)
+
+
+```
+
+
+## Conditional styling by ifelse()
+```{r}
+
+```
+
+If you want to filter out the 'other' category, you also need to tell ifelse() that your original df has changed
+```{r}
+
+```
+
+# Text processing with stringr 
+```{r}
+library('stringr')
+
+str_view_all('abcdefg','bc|f')
+str_view_all('abcdefg','[bdf]')
+str_view_all('abcdefg','[^bdf]')
+str_view_all('abcdefg','[b-f]')
+str_view_all(c('abc','def'),'^a')
+str_view_all(c('abc','def'),'f$')
+str_view_all('loooloolol','o?')
+str_view_all('loooloolol','o*')
+str_view_all('loooloolol','o+')
+str_view_all('loooloolol','o{2,}')
+```
+
+## stringr with ggplot2 
+```{r}
+
+```
+
