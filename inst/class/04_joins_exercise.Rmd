@@ -70,7 +70,7 @@ knitr::opts_chunk$set(
 # join()
 ## Mutating join()
 ### Inner join() == intersection 
-![](join GIF\inner-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/inner-join.gif)
 
 ```{r}
 
@@ -78,7 +78,7 @@ knitr::opts_chunk$set(
 
 ### Outer join()
 left_join()
-![](join GIF\left-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/left-join.gif)
 
 ```{r}
 
@@ -87,14 +87,14 @@ left_join()
 
 
 right_join()
-![](join GIF\right-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/right-join.gif)
 ```{r}
 
 ```
 
 
 full_join() == union 
-![](join GIF\full-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/full-join.gif)
 ```{r}
 
 ```
@@ -102,7 +102,7 @@ full_join() == union
 
 ## Filtering join()
 ### semi_join()
-![](join GIF\semi-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/semi-join.gif)
 ```{r}
 
 ```
@@ -114,7 +114,7 @@ You basically use the keys from right df to filter on the rows in left df and on
 
 
 ### anti_join()
-![](join GIF\anti-join.gif)
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/anti-join.gif)
 ```{r}
 
 ```
