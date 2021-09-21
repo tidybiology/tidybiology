@@ -1,0 +1,91 @@
+---
+title: 'Tidybiology: dplyr homework'
+author: "Devang Thakkar"
+date: "8/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(knitr)
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+```
+
+## Workshop
+
+You will be using the `scRNAseq` dataset to answer all the following questions
+
+Add your answers (text and/or code chunks as required) in the space after each question
+
+The `scRNAseq` dataset can be found in the scRNAseq package. To load it, run the following
+
+```{r}
+devtools::install_github("devangthakkar/scRNAseq")
+library(scRNAseq)
+```
+
+## Please answer the following questions
+
+What type of object is `cell_1`?
+
+```{r, eval=TRUE, echo = TRUE}
+class(scRNAseq$cell_1)
+```
+
+Filter the dataset to only include genes that are specifically expressed in the brain or in the heart and assign it to a new dataset `organ_data`. How many genes does `organ_data` have?
+
+```{r}
+organ_data <- scRNAseq %>%
+              filter(organ == "heart" | organ == "brain")
+organ_data
+```
+
+Using the `organ_data` dataset, select the following columns - `gene_name`, `organ`, and any column with the word `cell` in the column name. Store the result into a new dataset `filtered_data`. How many columns does `filtered_data` have?
+
+```{r}
+filtered_data <- organ_data %>%
+                 select(gene_name | organ | contains("cell"))
+filtered_data
+```
+
+Sort the `filtered_data` dataset from Z to A based on `gene_name`. Store the result into a new dataset `sorted_data`. 
+
+```{r}
+sorted_data <- filtered_data %>% 
+               arrange(desc(gene_name))
+sorted_data
+```
+
+Using the `sorted_data` dataset, we now want to look at what organ does `cell_1` originate from. Group the data set by the `organ`, and summarize the mean counts for `cell_1`
+
+```{r}
+sorted_data %>% group_by(organ) %>%
+                summarize(mean(cell_1))
+```
+
+BONUS: Identify the origin to which all the 10 cells belong. You will need to use the `across` functionality to select all columns that contain the word `cell`. Check out the documentation here: https://dplyr.tidyverse.org/reference/across.html
+
+```{r}
+sorted_data %>% group_by(organ) %>% 
+                summarise(across(contains("cell"), mean))
+```
