@@ -1,0 +1,306 @@
+---
+title: "Data Transformation with dplyr & stringr + ggplot2 workbook"
+author: "Junqi Lu"
+
+output:
+  html_document: 
+    
+    toc: true 
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: false 
+      
+    number_sections: true 
+    
+    theme: paper 
+    
+    output: 
+      fig_width: 10 
+      fig_height: 8 
+      fig_caption: true 
+      dev: svg 
+    
+    #Dataframe printing
+    df_print: paged 
+    
+    code_folding: show 
+  
+  pdf_document: default
+---
+
+Batch save plots (Advanced; skip for now)
+```{r}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  results = 'show',
+  fig.path = "OutputPlots/",
+  dev = c('svg', 'png'),
+  
+  
+  fig.width = 10,
+  #In the unit of inches
+  fig.height = 8,
+  #In the unit of inches
+  unit = "in"
+) 
+```
+
+# Load the workbook for this class
+library(tidybiology)
+launch_class(class  = 4)
+
+# Load data
+```{r}
+library('scRNAseq')
+scRNAData <- scRNAseq
+```
+
+## Preview data structure 
+```{r}
+library('dplyr')
+glimpse(scRNAData)
+```
+
+```{r}
+head(scRNAData,4) #Dummy datasets will be generated from these 4 rows
+```
+
+## Generate dummy data to for join() exercise
+Think what I am doing here to generate dataframe left and right by dplyr. It's ok if you don't understand the subseting part of the code. 
+```{r}
+library(dplyr)
+left <- scRNAData[1:3, 1:2] 
+#df[row_idx,col_idx] so it means taking the 1st 3 rows and 1st 2 columns of scRNAData and store the sub df into left
+#Alternation: left <- head(scRNAData[1:2],3)
+
+left <-
+  mutate(left, ID = rownames(left)) %>% #Save the row indexes from the original df as a column in the dummy df so genes are more distinguishable
+  select(ID, everything()) #Move the ID column to be the first column 
+left
+
+right <- scRNAData[c(1:2, 4), c(1, 8)]
+#c(1:2,4) is a vector or a list and using c(1:2,4) for row_idx means in addition to the 1st 2 rows, I also want the 4th row.
+#Using c(1,8) for col_idx means to focus on column 1 and column 8
+
+right <- mutate(right, ID = rownames(right)) %>%
+  select(ID, everything())
+#You should be able to observe that ID is actually different from the indexes since ID in the dummy df records the indexes of those genes in the original df, aka scRNAData, not the new dummy df
+right
+```
+
+
+```{r}
+library('dplyr')
+
+left <- scRNAData[1:3, 1:2] 
+#df[row_idx,col_idx] so it means taking the 1st 3 rows and 1st 2 columns of scRNAData and store the sub df into left
+#Alternation: left <- head(scRNAData[1:2],3)
+
+left <-
+  mutate(left, ID = rownames(left)) %>% #Save the row indexes from the original df as a column in the dummy df so genes are more distinguishable
+  select(ID, everything()) #Move the ID column to be the first column 
+left
+
+right <- scRNAData[c(1:2, 4), c(1, 8)]
+#c(1:2,4) is a vector or a list and using c(1:2,4) for row_idx means in addition to the 1st 2 rows, I also want the 4th row.
+#Using c(1,8) for col_idx means to focus on column 1 and column 8
+
+right <- mutate(right, ID = rownames(right)) %>%
+  select(ID, everything())
+#You should be able to observe that ID is actually different from the indexes since ID in the dummy df records the indexes of those genes in the original df, aka scRNAData, not the new dummy df
+right
+```
+
+
+
+
+# join()
+Use by=c('ID','gene_name') for all exercises below. 
+## Mutating join()
+For all the practice below, think what the results should be look like and then run the code. 
+### Inner join() == intersection 
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/inner-join.gif)
+
+```{r}
+# no pipe
+inner_join(left, right, by = c('ID', 'gene_name'))
+
+# with pipe
+left %>% 
+  inner_join(right, by = c('ID', 'gene_name'))
+
+# same output
+```
+
+### Outer join()
+left_join()
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/left-join.gif)
+
+```{r}
+left %>% 
+  left_join(right, by = c('ID', 'gene_name'))
+```
+
+
+
+right_join()
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/right-join.gif)
+```{r}
+left %>% 
+  right_join(right, by = c('ID', 'gene_name'))
+```
+
+
+full_join() == union 
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/full-join.gif)
+```{r}
+left %>% 
+  full_join(right, by = c('ID', 'gene_name'))
+```
+
+
+## Filtering join()
+### semi_join()
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/semi-join.gif)
+```{r}
+left %>% 
+  semi_join(right, by = c('ID', 'gene_name'))
+```
+You basically use the keys from right df to filter on the rows in left df and only keep the rows from the left df that have ID already existing in the right df. Is there a way to this by dplyr? Hint: %in%
+ID %in% right[,'ID']
+```{r}
+left %>% 
+  filter(ID == right$ID)
+
+right$ID
+
+left %>% 
+  filter(ID %in% c("1", "2" ,"4"))
+
+```
+
+
+### anti_join()
+![](https://raw.githubusercontent.com/jql2021/dplyr_join_functions/main/gif/anti-join.gif)
+
+You basically use the keys from right df to filter on the rows in left df but keep the ones with an ID that doesn't exist in the right df. Is there a more direct method? 
+```{r}
+`%!in%` <- Negate(`%in%`) #Negate() returns a negated function of the target function 
+
+left %>%
+  filter(ID %!in% right[,'ID'])
+
+
+left %>% 
+  filter(ID %!in% right$ID) #Same output
+```
+
+# DataFrames binding/assembly
+## bind_rows()
+Returns tables one on top of the other as a single table. 
+```{r}
+left %>% 
+  bind_rows(right) %>% View()
+```
+
+
+## bind_cols()
+Returns tables placed side by side as a single table. 
+
+* Column lengths must be equal and they will not be matched by id (to do so use join())
+* If both df have columns of the same names, a number will be added to be the new column names t oavoid confusions in the indexing system. 
+```{r}
+left %>% 
+  bind_cols(right) %>% View()
+```
+
+# Data transformation on the run for ggplot2
+```{r}
+glimpse(scRNAData)
+```
+
+## Data filtering by df subseting  
+If I want to investigate on the potential relationship between the organ and GC content, but I'm only interested in certain types of organ and RNA types
+
+Let's focus on organ as kidney and other
+* ggplot(scRNAData[scRNAData$organ==c('other','kidney'),])
+```{r}
+library(ggplot2)
+
+ggplot(scRNAData[scRNAData$organ==c('other','kidney'),]) + #Don't forget that comma inside the []
+  aes(x = organ, y = gene_percent_gc_content,fill=gene_type) +
+  geom_boxplot(shape = "circle") +
+  theme_minimal()
+```
+
+I'm not intersted in lncRNA, miRNAm and snRNA
+* ggplot(scRNAData[scRNAData$organ==c('other','kidney') & 
+                   scRNAData$gene_type %!in% c('lncRNA','miRNA','snRNA'),])
+```{r}
+`%!in%` <- Negate(`%in%`)
+
+ggplot(scRNAData[scRNAData$organ==c('other','kidney') & 
+                   scRNAData$gene_type %!in% c('lncRNA','miRNA','snRNA'),]) + #Don't forget that comma inside the []
+  aes(x = organ, y = gene_percent_gc_content,fill=gene_type) +
+  geom_boxplot(shape = "circle") +
+  theme_minimal()
+
+```
+
+
+## Conditional styling by ifelse()
+You can achieve the same results by mutate() to generate columns once a condition is met, but you can do it on the run as well. 
+```{r}
+library("ggplot2")
+ggplot(scRNAData %>% filter(organ != "other")) + 
+  aes(x = organ, y = transcript_length) + 
+  geom_col(aes(fill = organ)) + 
+  theme_minimal()
+
+ggplot(scRNAData) + 
+  aes(x = organ, y = transcript_length) + 
+  geom_col(fill = ifelse(scRNAData$organ == 'heart', 'red', 'green')) + 
+  theme_minimal()
+
+
+```
+
+If you want to filter out the 'other' category, you also need to tell ifelse() that your original df has changed
+```{r}
+ggplot(scRNAData[scRNAData$organ != 'other', ]) +
+  aes(x = organ, y = transcript_length) +
+  geom_col(fill = ifelse(scRNAData[scRNAData$organ != 'other', ]$organ == 'heart', 'red', 'green')) +
+  theme_minimal()
+```
+
+# Text processing with stringr 
+Think what the results might look like before run the codes. 
+```{r}
+library('stringr')
+
+str_view_all('abcdefg','bc|f')
+str_view_all('abcdefg','[bdf]')
+str_view_all('abcdefg','[^bdf]')
+str_view_all('abcdefg','[b-f]')
+str_view_all(c('abc','def'),'^a')
+str_view_all(c('abc','def'),'f$')
+str_view_all('loooloolol','o?')
+str_view_all('loooloolol','o*')
+str_view_all('loooloolol','o+')
+str_view_all('loooloolol','o{2,}')
+```
+
+## stringr with ggplot2 
+If the organ ends with t (heart) or n (brain), then label it as "Critical"; otherwise "Non-critical". 
+* aes(x = ifelse(str_detect(organ,'t$|n$'),'Critical','Non-critical'))
+```{r}
+ggplot(scRNAData) + #Don't forget that comma inside the []
+  aes(x = ifelse(str_detect(organ,'t$|n$'),'Critical','Non-critical'), #If the organ ends with t (heart) or n (brain), then label it as "Critical"; otherwise "Non-critical"
+      y = gene_percent_gc_content,fill=gene_type) +
+  geom_boxplot(shape = "circle") +
+  
+  labs(x='Critical organ?')+ #Relabel the x axis or you'll have the code appears as the x axis label 
+  
+  theme_minimal()
+```
+
