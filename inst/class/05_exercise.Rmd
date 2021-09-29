@@ -14,8 +14,7 @@ output:
 
 # YOU ARE IN THE RIGHT FILE IF YOU CAN SEE THIS
 # library(devtools)
-# 
-devtools::install_github("matthewhirschey/tidybiology", force=TRUE)
+# devtools::install_github("matthewhirschey/tidybiology", force=TRUE)
 
 
 
