@@ -9,7 +9,16 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+
+
+
 # YOU ARE IN THE RIGHT FILE IF YOU CAN SEE THIS
+# library(devtools)
+# 
+devtools::install_github("matthewhirschey/tidybiology", force=TRUE)
+
+
+
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggrepel)
