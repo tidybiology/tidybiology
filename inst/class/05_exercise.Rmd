@@ -1,9 +1,23 @@
 ---
 title: "Making a Volcano Plot"
-output: html_document
+output:
+  html_document:
+    toc: true 
+    toc_float: 
+      collapsed: false 
+      smooth_scroll: false 
 ---
 
 ```{r setup, include=FALSE}
+
+
+
+# YOU ARE IN THE RIGHT FILE IF YOU CAN SEE THIS
+# library(devtools)
+# devtools::install_github("matthewhirschey/tidybiology", force=TRUE)
+
+
+
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggrepel)
@@ -19,6 +33,13 @@ gene_pval <- read_csv("https://raw.githubusercontent.com/BAREJAA/website_for_joh
 These data was obtained from the package [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html), which is a Biconductor package that offers tools for multiple testing procedures. The "Golub dataset" refers to data used in [Golub et al. (1999)](https://pubmed.ncbi.nlm.nih.gov/10521349/). This was a landmark paper that described the use of genome-wide expression to predict disease status (specifically, acute myeloid lukemia (AML) or acute lymphoblastic lukemia (ALL). This is a rich dataset that is useful for practising everything from [data viz to machine learning](https://www.kaggle.com/crawford/gene-expression).  
 
 ## Making a Volcano Plot `r fa("mountain")`
+
+To begin, let's first look at the dataframes we have here
+
+```{r glimpse, results="hide"}
+glimpse(golub_subjects)
+glimpse(gene_pval)
+```
 
 We first need to join the two dataframes - `golub_subjects` and `gene_pval`.  
 
@@ -91,3 +112,82 @@ ggplot(golub_full, aes(log_fc, neg_log_pval)) +
   # Change theme to make a cleaner plot
   theme_bw() 
 ```
+
+
+## Understanding chunk options `r fa("r-project")`
+
+So far, we've asked you to ignore these `{r volcano-explained, eval = FALSE}` code chunks. Now, we'll take a look at what these lines can do. 
+
+The first element in the code chunk options is `r`, which defines the programming language the chunk is to be executed in.
+
+The second element is the code chunk label. This label is optional but it needs to be unique, R will throw an error if you try to knit two chunks with the same label.
+
+```{r label}
+print("Hello")
+```
+
+Exercise: Edit the code chunk options below to remove the error.
+
+```{r label1}
+print("Hello again")
+```
+
+We will now look at a few options for customizing the output.
+
+### `eval`
+
+By default, every chunk in a markdown file is run whenever you knit a document. If you want to keep a chunk but not run it, set `eval` to `FALSE`
+
+```{r no_eval, eval=FALSE}
+# this code chunk will not be evaluated - useful when you want to keep old code for posterity but not execute it
+print(old_var)
+# the variable old_var does not exist but this will not give an error
+```
+
+### `echo`
+
+By default, every chunk in a markdown file is printed when you knit a document. If you want to run a code chunk but not show the code, set `echo` to `FALSE`
+
+```{r no_echo, echo=FALSE}
+print("The code that printed this line is not visible")
+```
+
+
+### `results`
+
+By default, the output for every chunk is printed when you knit a document. If you want to run a code chunk but not show the output, set `results` to `"hide"`
+
+```{r no_results, results="hide"}
+# the code chunk will be run but the output for this code chunk will be hidden.
+new_var = 1
+```
+
+```{r no_results1}
+# results="hide" differs from eval=FALSE
+print(paste("The value of the variable new_var is", new_var))
+```
+
+
+### `message`
+
+By default, the info messages for every chunk is printed when you knit a document. If you want to run a code chunk but not show the info messages, set `message` to `FALSE`
+
+```{r no_messages, message=TRUE}
+# the code chunk will be run but the info messages for this code chunk will be hidden if message=FALSE
+install.packages("devtools", force=TRUE)
+```
+
+### `include`
+
+If you want to run a code chunk but show neither the code nor the output, set `include` to `FALSE`. This is useful for installing packages and other background tasks.
+
+```{r no_include, include=TRUE}
+# the code chunk will be run but the everything for this code chunk will be hidden if include=FALSE
+library(devtools)
+devtools::install_github("devangthakkar/scRNAseq", force=TRUE)
+library(scRNAseq)
+```
+
+For more options and tinkering, check out [https://yihui.org/knitr/options/](https://yihui.org/knitr/options/)
+
+
