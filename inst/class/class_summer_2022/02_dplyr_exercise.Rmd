@@ -1,0 +1,31 @@
+---
+title: "Tidybiology: dplyr"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# install.packages("tidybiology")
+library(tidyverse)
+# install.packages("fontawesome")
+library(fontawesome)
+library(tidybiology)
+
+```
+
+
+
+To save `output` as a new file (e.g. csv)
+
+```{r csv save, eval = FALSE, echo = TRUE}
+write_csv(output, "dplyr_output.csv")
+```
+
+## For more help
+
+Run the following to access the Dplyr vignette
+
+```{r Dplyr vignette, eval = FALSE, echo = TRUE}
+browseVignettes("dplyr")
+```
+
