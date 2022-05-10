@@ -1,0 +1,165 @@
+---
+title: "Tidybiology: ggplot2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+# install.packages("ggExtra")
+library(ggExtra)
+library(tidybiology)
+
+# Load data
+data(happy_full)
+data(happy_select)
+```
+
+## Visualizing data from the World Happiness Report
+
+Now we move to the fun part - making pretty plots!
+
+## Plotting distributions
+
+Let's begin by getting a sense of the overall distribution of `ladder_score` in the `happy_select` data frame
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score)) +
+  geom_histogram()
+```
+
+### Making improvements
+
+This plot is fine, but it's a little chunky. Let's try a different geom - `geom_density()` - to see what we get
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score)) +
+  geom_density()
+```
+
+### Density by region
+
+What does the `ladder_score` distribution look like for each region? There are many ways to visualize this. Let's first plot all the distributions on one plot  
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score, fill = region)) +
+  geom_density()
+```
+
+Nice! One small problem with this plot is that distributions are overlapping, making it difficult to visualize everything. Which argument can you adjust to improve this plot? Does it go within `aes()` or outside? Why?  
+
+### Faceting
+
+Let's consider an alternative way to plot the distributions. Go ahead and use the `facet_wrap()` function to do this
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score)) +
+  geom_density() +
+  facet_wrap(~region)
+```
+
+## Scatterplots
+
+### Are rich countries "happier"?
+
+We can use scatterplots to visualize the relationship between two variables. For example, let's take a look at the relationship between `ladder_score` and `logged_gdp_per_capita` (this relationship might be obvious, but maybe we'll be surprised!) 
+
+```{r}
+happy_select %>% 
+  ggplot(aes(logged_gdp_per_capita, ladder_score)) +
+  geom_point()
+```
+
+### Emphasizing relationships
+
+It's clear from the previous scatterplot that relationship between `ladder_score` and `logged_gdp_per_capita` is positive, and it looks pretty linear. To highlight this, we can use the `geom_smooth()` geom (remember to set the `se` argument to equal `FALSE` to just get a straight line) 
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score, logged_gdp_per_capita)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+## Making things prettier
+
+The plots we've made, while nice, look a little...basic. Let's try to make some improvements. We'll use the last plot  
+
+Add a title, subtitle, x-axis label, and y-axis label. Also change the overall look of the plot using your favourite `theme_*()` function  
+
+```{r}
+happy_select %>% 
+  ggplot(aes(ladder_score, logged_gdp_per_capita)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(title = "Does Money == Happiness?",
+       subtitle = "Plotting Ladder Score against Log GDP Per Capita",
+       x = "Ladder Score",
+       y = "Log GDP Per Capita") +
+  theme_minimal()
+```
+
+## Adding marginal plots
+
+Add histograms for `logged_gdp_per_capita` and `ladder_score` to the previous plot (to the top and to the right, respectively) 
+
+**Hint:** Use the `ggMarginal()` function from the `ggExtra` package. To learn more about this function, run `?ggMarginal`
+```{r}
+p1 <- happy_select %>% 
+        ggplot(aes(ladder_score, logged_gdp_per_capita)) +
+        geom_point() +
+        geom_smooth(se = FALSE) +
+        labs(title = "Does Money == Happiness?",
+             subtitle = "Plotting Ladder Score against Log GDP Per Capita",
+             x = "Ladder Score",
+             y = "Log GDP Per Capita") +
+        theme_minimal()
+
+ggMarginal(
+  p = p1,
+  type = 'histogram'
+)
+```
+
+## Applying the "final" touch
+
+Make the x- and y-axis text bold
+
+```{r}
+p1 <- happy_select %>% 
+        ggplot(aes(ladder_score, logged_gdp_per_capita)) +
+        geom_point() +
+        geom_smooth(se = FALSE) +
+        labs(title = "Does Money == Happiness?",
+             subtitle = "Plotting Ladder Score against Log GDP Per Capita",
+             x = "Ladder Score",
+             y = "Log GDP Per Capita") +
+        theme_minimal() +
+        theme(axis.text = element_text(face = "bold"))
+
+ggMarginal(
+  p = p1,
+  type = 'histogram'
+)
+```
+
+Save the last plot
+```{r}
+ggsave(file = "my_plot.png", ggMarginal(p = p1, type = 'histogram'))
+```
+
+## For more help
+
+Run the following to access the Ggplot2 vignette
+
+```{r}
+browseVignettes("ggplot2")
+```
+
