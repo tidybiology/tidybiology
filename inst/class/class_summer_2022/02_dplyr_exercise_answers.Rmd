@@ -1,5 +1,5 @@
 ---
-title: "Tidybiology: dplyr"
+title: "Tidybiology: dplyr (Answers)"
 output: html_document
 ---
 
@@ -42,7 +42,8 @@ A couple useful things to know about your dataset are -
 What function can you use to get this information?
 
 ```{r}
-
+dim(happy_full)
+glimpse(happy_full)
 ```
 
 ### Double data type
@@ -67,13 +68,15 @@ Let's warm up by performing some basic select operations
 How would you select just the columns `region` and `ladder_score`?  
 
 ```{r}
-
+happy_full %>% 
+  select(region, ladder_score)
 ```
 
 Now select everything between (and including) `social_support` and `generosity`
 
 ```{r}
-
+happy_full %>% 
+  select(social_support:generosity)
 ```
 
 ### Slightly-more-difficult selects  
@@ -83,7 +86,8 @@ Let's try something more challenging now. Select all variables that **do not** h
 **Hint:** You'll need a helper function. Also, don't forget `!`
 
 ```{r}
-
+happy_full %>% 
+  select(!contains("_"))
 ```
 
 Helper functions can be really...helpful! Ok, no we're ready to select the variables we will need for the rest of this exercise. Create a new dataframe called `happy_df` that contains the following variables (in the specified order!) - `country_name`, `region`, `ladder_score_in_dystopia`, `logged_gdp_per_capita`, `social_support`, `healthy_life_expectancy`, `freedom_to_make_life_choices`, `generosity`, `perceptions_of_corruption`  
@@ -107,7 +111,8 @@ Say we're only interested in looking at data for countries in East Asia. How wou
 **Hint:** To see which major regions are in this dataset, run `unique(happy_select$region)` 
 
 ```{r}
-
+happy_select %>% 
+  filter(region == "East Asia")
 ```
 
 ### Filter%in%g
@@ -117,7 +122,8 @@ Now use `filter()` to only keep data for the following countries - Algeria, Belg
 **Hint:** Try the `%in%` operator 
 
 ```{r}
-
+happy_select %>% 
+  filter(country_name %in% c("Algeria", "Belgium", "India", "Tunisia", "Uganda"))
 ```
 
 ### Numeric filtering
@@ -127,7 +133,8 @@ Finally, let's filter out information for countries that have a **below average*
 **Hint:** Use the base R `mean()` function 
 
 ```{r}
-
+happy_select %>% 
+  filter(ladder_score > mean(ladder_score))
 ```
 
 ## Creating new variables
@@ -139,7 +146,9 @@ Create a new variable called `normalized_ladder_score` that contains the ladder 
 As a bonus, re-order the resulting data frame in descending order of `normalized_ladder_score`
 
 ```{r}
-
+happy_select %>% 
+  mutate(normalized_ladder_score = ladder_score/ladder_score_in_dystopia) %>% 
+  arrange(desc(normalized_ladder_score))
 ```
 
 ### Discarding variables
@@ -148,10 +157,16 @@ Do the same as for the previous question but only keep the following columns -
 `ladder_score`, `ladder_score_in_dystopia`, `normalized_ladder_score`
 
 ```{r}
-
+happy_select %>% 
+  mutate(normalized_ladder_score = ladder_score/ladder_score_in_dystopia) %>% 
+  arrange(desc(normalized_ladder_score)) %>% 
+  select(contains("ladder"))
 
 # or
-
+happy_select %>% 
+  mutate(normalized_ladder_score = ladder_score/ladder_score_in_dystopia,
+         .keep = "used") %>% 
+  arrange(desc(normalized_ladder_score))
 ```
 
 ## Summary statistics
@@ -163,7 +178,9 @@ Let's now find out which are the happiest regions in the world. We'll do this by
 **Hint:** Remember the best friends, `group_by()` and `summarise()` 
 
 ```{r}
-
+happy_select %>% 
+  group_by(region) %>% 
+  summarise(mean(ladder_score))
 ```
 
 ### Maxed out
@@ -174,13 +191,15 @@ Now let's work out the maximum value for each numeric variable, for each region.
 `?across`
 
 ```{r}
-
+output <- happy_select %>% 
+            group_by(region) %>% 
+            summarise(across(where(is.numeric), max))
 ```
 
 Save `output` as a new file (e.g. csv)
 
 ```{r csv save, eval = FALSE, echo = TRUE}
-
+write_csv(output, "dplyr_output.csv")
 ```
 
 ## For more help

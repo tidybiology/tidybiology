@@ -1,5 +1,5 @@
 ---
-title: "Tidybiology: joins and stringr"
+title: "Tidybiology: joins and stringr (Answers)"
 output: html_document
 ---
 
@@ -29,12 +29,14 @@ Let's first familiarize ourselves with these two datasets -
 
 `happy`
 ```{r happy, echo = FALSE}
-
+happy %>% 
+  knitr::kable()
 ```
 
 `happy_join`  
 ```{r happy_join, echo = FALSE}
-
+happy_join %>% 
+  knitr::kable()
 ```
 
 ### `left_join()`
@@ -44,7 +46,8 @@ A requirement for all joins is the presence of a variable that is **common** to 
 Let's perform a `left_join()` on this variable and then examine the output 
 
 ```{r left-join}
-
+happy %>% 
+  left_join(happy_join, by = "country_name")
 ```
 
 Compare this output to `happy`. Notice that we now have additional information on healthy life expectancy for all the countries in `happy` *except* for Spain. The reason for the `NA` for Spain in this category is because this information is missing from `happy_join`  
@@ -56,7 +59,8 @@ So you can see how we can use `left_join()` to add new variable(s) to our datase
 Now do a right join, recalling that this is syntactically identical to a left join except you replace "left" with "right"  
 
 ```{r right-join}
-
+happy %>% 
+  right_join(happy_join, by = "country_name")
 ```
 
 Carefully look at the output. How is this different from a left join? In this output we only retain countries found in `happy_join`. Along with the `healthy_life_expectancy` variable, we also have three additional variables - `ladder_score`, `gdp`, and `social_support` - obtained from the `happy` dataset. Again, countries that are non-overlapping between these two datasets have NAs for these additional variables   
@@ -68,7 +72,8 @@ So you can think of a right join as being the inverse of a left join
 Again, run the code for an inner join and we'll then take a look at the output  
 
 ```{r inner-join}
-
+happy %>% 
+  inner_join(happy_join, by = "country_name")
 ```
 
 Here we see that we produce a dataset that only contains countries that are common to both `happy` and `happy_join`. This dataset also contains all the variables from both original datasets, and has the nice feature of not containing any missing values (i.e. NAs)
@@ -80,7 +85,8 @@ This is a useful join to use if you want your output to be complete and not cont
 Let's complete this section with the most complete join - the full join 
 
 ```{r full-join}
-
+happy %>% 
+  full_join(happy_join, by = "country_name")
 ```
 
 As the name indicates, this is the most complete join that produces a dataset that contains all the information from both `happy` and `happy_join`. Use this if you don't want to discard any data during your data wrangling 
@@ -94,7 +100,8 @@ Work out the number of characters (including spaces) for each country name in th
 Which country has the longest name (in terms of number of characters)?
 
 ```{r}
-
+happy_full %>% 
+  mutate(name_length = str_count(country_name))
 ```
 
 ### Focusing on Europe 
@@ -102,7 +109,8 @@ Which country has the longest name (in terms of number of characters)?
 Filter the `happy_full` data frame so that it only contains rows that correspond to European countries
 
 ```{r}
-
+happy_full %>% 
+  filter(str_detect(region, "Europe"))
 ```
 
 ### Europe or America 
@@ -110,7 +118,8 @@ Filter the `happy_full` data frame so that it only contains rows that correspond
 Filter the `happy_full` data frame so that it only contains rows that correspond to European or American countries
 
 ```{r}
-
+happy_full %>% 
+  filter(str_detect(region, "Europe|America"))
 ```
 
 ### Filling in gaps
@@ -118,7 +127,8 @@ Filter the `happy_full` data frame so that it only contains rows that correspond
 Some entries in the `region` column contain spaces in their names. Replace these with underscores
 
 ```{r}
-
+happy_full %>% 
+  mutate(region = str_replace_all(region, " ", "_"))
 ```
 
 ## For more help
