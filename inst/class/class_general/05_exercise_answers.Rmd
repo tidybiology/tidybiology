@@ -1,0 +1,14 @@
+---
+title: "Sentiment Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+library(fontawesome)
+```
+
