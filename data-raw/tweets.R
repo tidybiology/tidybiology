@@ -6,7 +6,7 @@ library(lubridate)
 get_token()
 
 # tweets downloaded at
-# Mon May 16 14:26:41 2022 ------------------------------
+# Mon May 16 15:21:33 2022 ------------------------------
 
 dnc <- search_tweets(
   "from:TheDemocrats", n = 100, include_rts = FALSE
