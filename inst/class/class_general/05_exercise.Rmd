@@ -1,0 +1,33 @@
+---
+title: "Tidybiology: Class 5 Report Exercise" 
+subtitle: "My favourite country is `r params$country_name`"
+output: html_document  
+params: 
+  country_name: "India"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+# remotes::install_github("hadley/emo")
+library(tidyverse)
+library(tidybiology)
+library(emo)
+
+# Load data
+data(happy_full)
+```
+
+```{r include = FALSE}
+# Obtain information for your country
+my_country <- filter(happy_full, country_name == params$country_name)
+```
+
+`r my_country$country_name` `r emo::ji(str_to_lower(params$country_name))` is a country in `r my_country$region`. Residents of `r my_country$country_name` have a life expectancy of `r round(my_country$healthy_life_expectancy)`, which is `r abs(my_country$healthy_life_expectancy - mean(happy_full$healthy_life_expectancy, na.rm = TRUE) %>% round())` years **`r if_else((my_country$healthy_life_expectancy - mean(happy_full$healthy_life_expectancy, na.rm = TRUE)) > 0, "greater", "less")`** than the average global life expectancy of `r round(mean(happy_full$healthy_life_expectancy))`.
+
+```{r provenance, include=FALSE}
+#Session information for provenance and reproducibility
+session_provenance()
+```

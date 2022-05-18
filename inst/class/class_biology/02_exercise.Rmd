@@ -1,0 +1,369 @@
+---
+title: "Tidybiology: dplyr"
+author: "Devang Thakkar"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(knitr)
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+  lines <- options$output.lines
+  if (is.null(lines)) {
+    return(hook_output(x, options))  # pass to default hook
+  }
+  x <- unlist(strsplit(x, "\n"))
+  more <- "..."
+  if (length(lines)==1) {        # first n lines
+    if (length(x) > lines) {
+      # truncate the output, but add ....
+      x <- c(head(x, lines), more)
+    }
+  } else {
+    x <- c(more, x[lines], more)
+  }
+  # paste these lines together
+  x <- paste(c(x, ""), collapse = "\n")
+  hook_output(x, options)
+})
+```
+
+## Loading the `scRNAseq` dataset into RStudio 
+
+The datasets can be found in the `scRNAseq` package (TODO: on the Hirsheylab Github page)
+
+To install and load the packages, run the following
+
+```{r install tidybiology, echo = TRUE, warning = FALSE, message = FALSE, eval = TRUE}
+devtools::install_github("devangthakkar/scRNAseq")
+library(scRNAseq)
+```
+
+## Inspecting the `scRNAseq` dataset 
+
+Use the `dim()` function to see how many rows (observations) and columns (variables) there are
+
+```{r dim, echo = TRUE, warning = FALSE}
+
+```
+
+## Inspecting the `scRNAseq` dataset 
+
+Use the `glimpse()` function to see what kinds of variables the dataset contains
+```{r glimpse, echo = TRUE, warning = FALSE}
+
+```
+
+## Basic Data Types in R 
+
+R has 6 basic data ypes -
+
+**character** - `"two"`, `"words"`  
+
+**numeric** - `2`, `11.5`  
+
+**integer** - `2L` (the `L` tells R to store this as an integer)  
+
+**logical** - `TRUE`, `FALSE`  
+
+**complex** - `1+4i`  
+
+(**raw**)
+
+You will also come across the **double** datatype. It is the same as **numeric**
+
+**factor**. A **factor** is a collection of *ordered* character variables
+
+## Basic Data Types in R 
+
+In addition to the `glimpse()` function, you can use the `class()` function to determine the data type of a specific column
+
+```{r class, echo = TRUE, warning = FALSE}
+
+```
+
+## (Re)Introducing `%>%` 
+
+The `%>%` operator is a way of "chaining" together strings of commands that make reading your code easy. The following code chunk illustrates how `%>%` works
+
+```{r %>%, eval = TRUE, echo = TRUE, output.lines=11}
+
+  
+```
+
+The above code chunk does the following - it takes you dataset, `scRNAseq`, and "pipes" it into `select()`
+
+## (Re)Introducing `%>%` 
+
+The second line selects just the columns named `gene_name` and `transcript_length` and "pipes" that into `filter()`. The final line selects genes that have transcripts longer than 50000 base pairs
+
+When you see `%>%`, think "and then"
+
+The alternative to using `%>%` is running the following code 
+
+```{r alternative, eval = FALSE, echo = TRUE, output.lines=11}
+
+```
+
+Although this is only one line as opposed to three, it's both more difficult to write and more difficult to read
+
+## Introducing the main dplyr verbs {.build}
+
+dplyr is a package that contains a suite of functions that allow you to easily manipulate a dataset      
+
+Some of the things you can do are -
+
+- select rows and columns that match specific criteria
+
+- create new variables (columns)
+
+- obtain summary statistics on individual groups within your datsets 
+
+The main verbs we will cover are `select()`, `filter()`, `arrange()`, `mutate()`, and `summarise()`. These all combine naturally with `group_by()` which allows you to perform any operation "by group"
+
+## `select()` 
+
+The `select()` verb allows you to extract specific columns from your dataset  
+
+The most basic `select()` is one where you comma separate a list of columns you want included
+
+For example, if you only want to select the `gene_name` and `transcript_length` columns, run the following code chunk 
+
+```{r select simple, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+## `select()` 
+
+If you want to select all columns *except* `transcript_length`, run the following 
+
+```{r select exclude, eval = TRUE, echo = FALSE, output.lines=11}
+
+```
+
+## `select()` 
+
+You can also provide a range of columns to return two columns and everything in between. For example 
+
+```{r select range, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+This code selects the following columns - `chromosome_scaffold_name`, `strand`, `transcript_start_bp`, `transcript_end_bp`, and `transcript_length`.
+
+There are multiple helpers you can use with select to subset columns such as `starts_with()`, `endswith()`, and `contains()`.
+
+```{r select helper, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+This code selects the following columns - `transcript_start_bp`, `transcript_end_bp`, `transcript_length`, and `transcript_stable_id`.
+
+Finally, you can add multiple possible conditions that can be matched. We do this using the OR operator `|`. 
+
+```{r select or, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+This code selects the following columns - `gene_name`, `transcript_start_bp`, `transcript_end_bp`, `transcript_length`, and `transcript_stable_id`.
+
+## `select()` exercise 
+
+Select the following columns - `gene_name`, `organ`, `cell_1`, `cell_2`, `cell_3`, `cell_4`, `cell_5`, `cell_6`, `cell_7`, `cell_8`, `cell_9`, and `cell_10`
+
+```{r select solution, eval = TRUE, echo = TRUE}
+
+```
+
+## `filter()`
+
+The `filter()` verb allows you to choose rows based on certain condition(s) and discard everything else
+
+All filters are performed on some logical statement
+
+If a row meets the condition of this statement (i.e. is true) then it gets chosen (or "filtered"). All other rows are discarded
+
+## `filter()`
+
+Filtering can be performed on categorical data
+
+```{r filter categorical, eval = TRUE, echo = TRUE}
+
+```
+
+The code chunk above only shows you genes that are specifically expressed in the heart
+
+Note that `filter()` only applies to rows, and has no effect on columns
+
+## `filter()`
+
+Filtering can also be performed on numerical data
+
+For example, to select genes with a `transcript_length` value that is greater than 50000, run the following code
+
+```{r filter numerical, eval = TRUE, echo = TRUE}
+
+```
+
+## `filter()`
+
+To filter on multiple conditions, you can write a sequence of `filter()` commands
+
+For example, to choose genes specifically expressed in the brain **and** a `transcript_length` value that is less than 1000 bp
+
+```{r filter both, eval = TRUE, echo = TRUE}
+
+```
+
+## `filter()`
+
+To avoid writing multiple `filter()` commands, multiple logical statements can be put inside a single `filter()` command, separated by commas
+
+```{r filter both efficient, eval = TRUE, echo = TRUE}
+
+```
+
+We've looked at the OR operator `|` before. The comma `,` in the statement above is the same as using an AND operator `&`.
+
+```{r filter both efficient and, eval = TRUE, echo = TRUE}
+
+```
+
+## `filter()` exercise
+
+Filter all genes specifically expressed in either the heart **or** the brain **and** a `gene_percent_gc_content` value that is **greater** than 50
+
+`|` = "or"
+
+`>` = "greater than"
+
+```{r filter exercise, eval = TRUE, echo = TRUE}
+
+```
+
+## `arrange()`
+
+You can use the `arrange()` verb to sort rows
+
+The input for arrange is one or many columns, and `arrange()` sorts the rows in ascending order i.e. from smallest to largest
+
+For example, to sort rows from smallest to largest gene, run the following
+
+```{r arrange, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+## `arrange()`
+
+To reverse this order, use the `desc()` function within `arrange()`
+
+```{r arrange desc, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+## `arrange()` exercise
+
+What happens when you apply `arrange()` to a categorical variable?
+
+```{r arrange exercise, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+## `mutate()`
+
+The `mutate()` verb, unlike the ones covered so far, creates new variable(s) i.e. new column(s). For example
+
+```{r mutate simple, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+The code chunk above takes all the elements of the column `transcript_length`, evaluates the square root of each element, and populates a new column called `sqrt_length` with these results
+
+## `mutate()`
+
+Multiple columns can be used as inputs. For example
+
+```{r mutate multiple, eval = TRUE, echo = TRUE, output.lines=11}
+
+```
+
+This code takes the end position and start position of each gene and calculates its gene length (which is different from its `transcript_length`)
+
+The results are stored in a new column called `gene_length`
+
+## `mutate()` exercise
+
+Create a new column (give it any name you like) and fill it with the intronic lengths. Remember, introns are genic regions that are not transcribed.
+
+```{r mutate exercise, eval = TRUE, echo = TRUE}
+
+```
+
+## `summarise()`
+
+`summarise()` produces a new dataframe that aggregates that values of a column based on a certain condition.
+
+For example, to calculate the mean transcript length and percent gc content, run the following
+
+```{r summarise, eval = TRUE, echo = TRUE}
+
+```
+
+## `summarise()`
+
+You can assign your own names by running the following
+
+```{r summarise name, eval = TRUE, echo = TRUE}
+
+```
+
+## `summarise()` exercise
+
+Make a new table that contains the mean, median and standard deviations of gene transcript lengths
+
+Use the `median()` and `sd()` functions to calculate median and standard deviation
+
+```{r summarise exercise, eval = TRUE, echo = TRUE}
+
+```
+
+## `group_by()`
+
+`group_by()` and `summarise()` can be used in combination to summarise by groups
+
+For example, if you'd like to know the mean transcript length of genes associated with heart, brain, and other organs, run the following
+
+```{r group_by and summarise, eval = TRUE, echo = TRUE}
+
+```
+
+## Saving a new dataset
+
+If you'd like to save the output of your wrangling, you will need to use the assignment `<-` or `=` operators
+
+```{r all together now save, eval = TRUE, echo = TRUE}
+
+```
+
+If you only assign the value to a variable, you will not see any output. In order to see the output of your operations, we can look at what is stored in the `output` variable.
+
+```{r view stored, eval = TRUE, echo = TRUE}
+
+```
+
+To save `output` as a new file (e.g. csv)
+
+```{r csv save, eval = FALSE, echo = TRUE}
+
+```
+
+## For more help
+
+Run the following to access the Dplyr vignette
+
+```{r Dplyr vignette, eval = FALSE, echo = TRUE}
+browseVignettes("dplyr")
+```
+

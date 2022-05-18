@@ -1,0 +1,131 @@
+---
+title: "Tidybiology: joins and stringr"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+# install.packages("ggExtra")
+library(ggExtra)
+library(tidybiology)
+
+# Load data
+data(happy)
+data(happy_join)
+data(happy_full)
+```
+
+## Joins
+
+Let's now practice combining datasets by using the Join family of functions from the Dplyr package
+
+The two datasets we will be combining are called `happy` and `happy_join`. These are both tiny datasets that will make it easier to understand what the `*_join()` functions are doing  
+
+Let's first familiarize ourselves with these two datasets - 
+
+`happy`
+```{r happy, echo = FALSE}
+
+```
+
+`happy_join`  
+```{r happy_join, echo = FALSE}
+
+```
+
+### `left_join()`
+
+A requirement for all joins is the presence of a variable that is **common** to both datasets being joined. In the case of `happy` and `happy_join` this variable is `country_name` 
+
+Let's perform a `left_join()` on this variable and then examine the output 
+
+```{r left-join}
+
+```
+
+Compare this output to `happy`. Notice that we now have additional information on healthy life expectancy for all the countries in `happy` *except* for Spain. The reason for the `NA` for Spain in this category is because this information is missing from `happy_join`  
+
+So you can see how we can use `left_join()` to add new variable(s) to our dataset 
+
+### `right_join()`
+
+Now do a right join, recalling that this is syntactically identical to a left join except you replace "left" with "right"  
+
+```{r right-join}
+
+```
+
+Carefully look at the output. How is this different from a left join? In this output we only retain countries found in `happy_join`. Along with the `healthy_life_expectancy` variable, we also have three additional variables - `ladder_score`, `gdp`, and `social_support` - obtained from the `happy` dataset. Again, countries that are non-overlapping between these two datasets have NAs for these additional variables   
+
+So you can think of a right join as being the inverse of a left join  
+
+### `inner_join()`
+
+Again, run the code for an inner join and we'll then take a look at the output  
+
+```{r inner-join}
+
+```
+
+Here we see that we produce a dataset that only contains countries that are common to both `happy` and `happy_join`. This dataset also contains all the variables from both original datasets, and has the nice feature of not containing any missing values (i.e. NAs)
+
+This is a useful join to use if you want your output to be complete and not contain any missing data 
+
+### `full_join()`
+
+Let's complete this section with the most complete join - the full join 
+
+```{r full-join}
+
+```
+
+As the name indicates, this is the most complete join that produces a dataset that contains all the information from both `happy` and `happy_join`. Use this if you don't want to discard any data during your data wrangling 
+
+## Stringr 
+
+### Country name lengths
+
+Work out the number of characters (including spaces) for each country name in the `happy_full` data frame and populate a new column called `name_length` 
+
+Which country has the longest name (in terms of number of characters)?
+
+```{r}
+
+```
+
+### Focusing on Europe 
+
+Filter the `happy_full` data frame so that it only contains rows that correspond to European countries
+
+```{r}
+
+```
+
+### Europe or America 
+
+Filter the `happy_full` data frame so that it only contains rows that correspond to European or American countries
+
+```{r}
+
+```
+
+### Filling in gaps
+
+Some entries in the `region` column contain spaces in their names. Replace these with underscores
+
+```{r}
+
+```
+
+## For more help
+
+Run the following to access the Stringr vignette
+
+```{r}
+browseVignettes("stringr")
+```
+

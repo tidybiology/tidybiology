@@ -1,0 +1,148 @@
+---
+title: "Analyzing tweets from the Democrats and Republicans"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+library(tidybiology)
+library(tidytext)
+library(fontawesome)
+library(scales)
+library(topicmodels)
+library(patchwork)
+
+data(tweets)
+```
+
+# Sentiment analysis `r fa("book")`
+
+## Background
+
+The 100 most recent tweets (excluding retweets) for the official Democratic and Republican party twitter accountes were downloaded on May 16 2022. These tweets, along with additional useful information, can be found in the `tweets` dataset in the `{tidybiology}` package
+
+The following book was used as guide for this analysis - https://www.tidytextmining.com
+
+## Visualizing sentiment over time
+
+One way of quantifying how positive or negative a tweet is by computing its "sentiment". A simple way to do this is to use a sentiment dictionary that has numeric sentiment values for each word. You can use the `{syuzhet}` R package to compute the mean sentiment of input sentences. 
+
+The following plot shows the sentiment of tweets for both parties over a brief period of time (positive scores indicate generally positive sentiment and vice versa.) We see that tweets sent by the Democrats are slightly more positive on average
+```{r echo = FALSE}
+tweets %>% 
+  ggplot(aes(created_at, sentiment, colour = screen_name, label = text)) +
+  geom_line() +
+  geom_point() +
+  geom_text(alpha = 0) +
+  facet_wrap(~screen_name) +
+  theme_minimal() +
+  labs(x = "Data",
+       y = "Sentiment") +
+  theme(axis.text.x = element_text(angle = 45),
+        legend.position = "none")
+```
+
+## Comparing frequencies of word usage
+
+Plot of the most frequently used words by both parties. We see that some words, like "families" and "americans", are used at similar frequencies by both parties, whereas, for example, the Democrats tend to send out a larger fraction of tweets with the word "republicans" in them  
+
+```{r echo = FALSE, message  = FALSE, warning = FALSE}
+# clean up tweets and remove stop words
+remove_reg <- "&amp;|&lt;|&gt;"
+tidy_tweets <- tweets %>%
+  mutate(text = str_remove_all(text, remove_reg)) %>%
+  unnest_tokens(word, text, token = "tweets") %>%
+  filter(
+    !word %in% stop_words$word,
+    !word %in% str_remove_all(stop_words$word, "'"),
+    str_detect(word, "[a-z]")
+  )
+
+frequency <- tidy_tweets %>%
+  count(screen_name, word, sort = TRUE) %>%
+  left_join(tidy_tweets %>%
+              count(screen_name, name = "total")) %>%
+  mutate(freq = n / total)
+
+frequency <- frequency %>% 
+  select(screen_name, word, freq) %>% 
+  pivot_wider(names_from = screen_name, values_from = freq) %>%
+  arrange(GOP, TheDemocrats)
+
+ggplot(frequency, aes(GOP, TheDemocrats)) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.25, height = 0.25) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  geom_abline(color = "red") +
+  theme_minimal()
+```
+
+## Topic Modeling
+
+We can apply an unsupervised approach called "topic modeling" to identify topics (or themes) that tweets belong to
+```{r echo = FALSE, message = FALSE}
+tweet_doc <- tweets %>%
+  select(screen_name, text) %>%
+  group_by(screen_name) %>%
+  mutate(tweet_number = 1:n()) %>%
+  ungroup() %>%
+  unite(document, screen_name, tweet_number) 
+
+# split into words
+by_chapter_word <- tweet_doc %>%
+                     mutate(text = str_remove_all(text, remove_reg)) %>%
+                     unnest_tokens(word, text, token = "tweets")
+
+# find document-word counts
+word_counts <- by_chapter_word %>%
+  filter(!str_detect(word, "^@")) %>% # remove Twitter usernames
+  anti_join(stop_words) %>%
+  count(document, word, sort = TRUE)
+
+# perform latent dirichlet allocation
+tweets_dtm <- word_counts %>%
+                cast_dtm(document, word, n)
+
+tweets_lda <- LDA(tweets_dtm, k = 2, control = list(seed = 1234))
+
+tweets_topics <- tidy(tweets_lda, matrix = "beta")
+
+top_terms <- tweets_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  scale_y_reordered()
+```
+
+This plot suggests that topic 1 is associated with terms that are important to Democrats (e.g. "republicans") and topic 2 indicates terms that are important to Republicans (e.g. "biden")  
+
+### Per-document classification
+
+```{r echo = FALSE, message = FALSE}
+tweets_gamma <- tidy(tweets_lda, matrix = "gamma")
+
+tweets_gamma <- tweets_gamma %>% 
+                  mutate(document = str_remove(document, "_[:digit:]+")) %>% 
+                  rename(screen_name = document)
+
+tweets_gamma %>%
+  mutate(screen_name = reorder(screen_name, gamma * topic)) %>%
+  ggplot(aes(factor(topic), gamma)) +
+  geom_boxplot() +
+  facet_wrap(~ screen_name) +
+  labs(x = "topic", y = expression(gamma))
+```
+
+The Democrats score slightly higher for Topic 1 versus Topic 2 (opposite for the GOP), which agrees with our prediction that topic 1 leans more Democrat and topic 2 leans more Republican

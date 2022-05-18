@@ -1,0 +1,97 @@
+---
+title: "Tidybiology: Class 5 Report Exercise"
+subtitle: "My favorite gene is `r params$gene`"
+output: html_document  
+params: 
+  gene: "MDH2"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tidybiology)
+library(mitocarta)
+library(viridis)
+
+#clear environment
+#rm(list=ls()) 
+
+mitocarta_class5 <- mitocarta %>% 
+  filter(mcarta2_list == 1) %>% 
+  mutate(cerebrum = if_else(str_detect(tissues, "cerebrum|all"), TRUE, FALSE)) %>% 
+  mutate(cerebellum = if_else(str_detect(tissues, "cerebellum|all"), TRUE, FALSE))  %>% 
+  mutate(brainstem = if_else(str_detect(tissues, "brainstem|all"), TRUE, FALSE)) %>% 
+  mutate(spinalcord = if_else(str_detect(tissues, "spinalcord|all"), TRUE, FALSE)) %>% 
+  mutate(kidney = if_else(str_detect(tissues, "kidney|all"), TRUE, FALSE)) %>% 
+  mutate(liver = if_else(str_detect(tissues, "liver|all"), TRUE, FALSE)) %>% 
+  mutate(heart = if_else(str_detect(tissues, "heart|all"), TRUE, FALSE)) %>% 
+  mutate(skeletalmuscle = if_else(str_detect(tissues, "skeletalmuscle|all"), TRUE, FALSE)) %>% 
+  mutate(adipose = if_else(str_detect(tissues, "adipose|all"), TRUE, FALSE)) %>% 
+  mutate(smallintestine = if_else(str_detect(tissues, "smallintestine|all"), TRUE, FALSE)) %>% 
+  mutate(largeintestine = if_else(str_detect(tissues, "largeintestine|all"), TRUE, FALSE)) %>% 
+  mutate(stomach = if_else(str_detect(tissues, "stomach|all"), TRUE, FALSE)) %>% 
+  mutate(placenta = if_else(str_detect(tissues, "placenta|all"), TRUE, FALSE)) %>% 
+  mutate(testis = if_else(str_detect(tissues, "testis|all"), TRUE, FALSE)) %>% 
+  select(symbol, tissues, cerebrum:testis) 
+
+mitocarta_class5 %>% summarize_if(is.logical, sum, na.rm = TRUE)
+  
+mitocarta_class5_long <- mitocarta_class5 %>% 
+  pivot_longer(cerebrum:testis, names_to = "location", values_to = "true_false")
+
+mitocarta_class5_long %>% group_by(location) %>% count(true_false, sort = TRUE)
+
+mitocarta_class5_intensity <- mitocarta %>% 
+  filter(mcarta2_list == 1) %>% 
+  pivot_longer(cerebrum_total_peak_intensity_log10:testis_total_peak_intensity_log10, names_to = "location_intensity", values_to = "intensity") %>% 
+  select(symbol, location_intensity, intensity, protein_length)
+
+mitocarta_class5_intensity$location_intensity <- str_replace(mitocarta_class5_intensity$location_intensity, "_total_peak_intensity_log10", "")
+
+mitocarta_class5 <- mitocarta_class5_long %>% 
+  left_join(mitocarta_class5_intensity, by = c("symbol" = "symbol", "location" = "location_intensity")) %>% 
+  select(-tissues)
+
+rm(list = c("mitocarta_class5_intensity", "mitocarta_class5_long"))
+```
+
+```{r include=FALSE}
+#####STUDENTS START HERE#####
+
+#Which tissue has the most unique mitochondrial proteins?
+mitocarta_class5 %>% 
+  group_by(location) %>% 
+  count(true_false, sort = TRUE)
+
+#Store an object to call below
+top <- mitocarta_class5 %>% 
+  group_by(location) %>% 
+  count(true_false, sort = TRUE) %>% 
+  ungroup() %>% 
+  slice(1)
+
+#calculate average lengths of all proteins
+avg_length <- mitocarta_class5 %>% 
+  filter(true_false == TRUE) %>% 
+  group_by(location) %>% 
+  summarize(mean_length = mean(protein_length, na.rm = TRUE)) %>% #need to remove NAs to make fun(mean) work
+  arrange(desc(mean_length))
+
+#Store favorite gene
+fav <- mitocarta_class5 %>% 
+  filter(symbol == params$gene) %>% 
+  arrange(desc(intensity)) %>% 
+  slice(1)
+
+#store an object to call longer
+longer <- if_else(
+  fav$protein_length > avg_length %>% filter(location == fav$location) %>% pull(mean_length), "longer", "shorter"
+)
+```
+
+  
+My favorite gene is `r fav$symbol`, which encodes a mitochondrial protein that is most abundant in the `r fav$location` and is `r fav$protein_length` amino acids long. The average length of proteins in the `r fav$location` is `r round(avg_length %>% filter(location == fav$location) %>% pull(mean_length),0)` amino acids, which makes `r fav$symbol` `r longer` than average.
+  
+```{r provenance, include=FALSE}
+#Session information for provenance and reproducibility
+session_provenance()
+```

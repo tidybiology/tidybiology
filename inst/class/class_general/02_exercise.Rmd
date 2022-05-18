@@ -1,0 +1,193 @@
+---
+title: "Tidybiology: dplyr"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+# install.packages("fontawesome")
+library(fontawesome)
+library(tidybiology)
+
+# Load data
+data(happy_full)
+data(happy_select)
+```
+
+## Analysing the World Happiness Report `r fa("globe-europe")`
+
+In this exercise, you will apply what you've learned in class to perform exploratory data analysis (EDA) on the **World Happiness Report**    
+
+This dataset was downloaded from the website [Kaggle](https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021?select=world-happiness-report.csv). We will use the **2021** data in this exercise. This dataset is stored in an object called `happy_full` 
+
+###  
+
+In this exercise, you will practice:
+
+* gaining quick insight into the type of data this dataset contains
+* using functions from the Dplyr package to wrangle your data and obtain useful summaries
+
+## Take a look at your data
+
+### What does the dataset look like?
+
+A couple useful things to know about your dataset are -  
+- The number of rows and columns
+- The types of variables the dataset contains  
+
+What function can you use to get this information?
+
+```{r}
+
+```
+
+### Double data type
+
+We can see that `happy_full` contains many variables that are of type double. 
+
+The `double` data type refers to which of the following?  
+
+- A string
+- An integer
+- A number with a decimal point
+- A factor
+
+## Selecting Variables 
+
+The `happy_full` dataset contains many variables. This gives us the chance to practice our `select()`-ing skills!
+
+### Simple selects
+
+Let's warm up by performing some basic select operations  
+
+How would you select just the columns `region` and `ladder_score`?  
+
+```{r}
+
+```
+
+Now select everything between (and including) `social_support` and `generosity`
+
+```{r}
+
+```
+
+### Slightly-more-difficult selects  
+
+Let's try something more challenging now. Select all variables that **do not** have underscores in their names
+
+**Hint:** You'll need a helper function. Also, don't forget `!`
+
+```{r}
+
+```
+
+Helper functions can be really...helpful! Ok, no we're ready to select the variables we will need for the rest of this exercise. Create a new dataframe called `happy_df` that contains the following variables (in the specified order!) - `country_name`, `region`, `ladder_score_in_dystopia`, `logged_gdp_per_capita`, `social_support`, `healthy_life_expectancy`, `freedom_to_make_life_choices`, `generosity`, `perceptions_of_corruption`  
+
+Avoid simply typing out the names of all these variables. Add `glimpse(happy_df)` as the last line to see if you got the right answer  
+
+```{r}
+
+```
+
+**Note:** `happy_df` hasn't actually been saved anywhere. So we will be using an identical dataset called `happy_select` for the rest of this exercise. 
+
+## Filtering
+
+`happy_select` contains both numeric and character variables, with lots and lots of observations (rows). This gives us a great opportunity to practice our filtering skills!  
+
+### Simple filters
+
+Say we're only interested in looking at data for countries in East Asia. How would we do this?
+
+**Hint:** To see which major regions are in this dataset, run `unique(happy_select$region)` 
+
+```{r}
+
+```
+
+### Filter%in%g
+
+Now use `filter()` to only keep data for the following countries - Algeria, Belgium, India, Tunisia, and Uganda. Try to do this without writing multiple filter statements  
+
+**Hint:** Try the `%in%` operator 
+
+```{r}
+
+```
+
+### Numeric filtering
+
+Finally, let's filter out information for countries that have a **below average** ladder score 
+
+**Hint:** Use the base R `mean()` function 
+
+```{r}
+
+```
+
+## Creating new variables
+
+### Creating normalized ladder scores
+
+Create a new variable called `normalized_ladder_score` that contains the ladder scores for each county in `happy_full` divided by the ladder score in dystopia  
+
+As a bonus, re-order the resulting data frame in descending order of `normalized_ladder_score`
+
+```{r}
+
+```
+
+### Discarding variables
+
+Do the same as for the previous question but only keep the following columns -
+`ladder_score`, `ladder_score_in_dystopia`, `normalized_ladder_score`
+
+```{r}
+
+
+# or
+
+```
+
+## Summary statistics
+
+### Which regions are the happiest? 
+
+Let's now find out which are the happiest regions in the world. We'll do this by working out the average `ladder_score` of all the countries in each region 
+
+**Hint:** Remember the best friends, `group_by()` and `summarise()` 
+
+```{r}
+
+```
+
+### Maxed out
+
+Now let's work out the maximum value for each numeric variable, for each region. Save the output of this code as an object named `output` 
+
+**Hint:** `across()` is helpful here. To learn more about this function, run 
+`?across`
+
+```{r}
+
+```
+
+Save `output` as a new file (e.g. csv)
+
+```{r csv save, eval = FALSE, echo = TRUE}
+
+```
+
+## For more help
+
+Run the following to access the Dplyr vignette
+
+```{r Dplyr vignette, eval = FALSE, echo = TRUE}
+browseVignettes("dplyr")
+```
+
