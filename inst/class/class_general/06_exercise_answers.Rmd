@@ -1,0 +1,127 @@
+---
+title: "Sentiment Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+# Load packages
+
+# install.packages("tidybiology")
+library(tidyverse)
+library(tidytext)
+library(fontawesome)
+library(scales)
+library(plotly)
+library(topicmodels)
+library(patchwork)
+
+data(tweets)
+```
+
+# Sentiment analysis
+```{r}
+tweets %>% 
+  ggplot(aes(created_at, sentiment, colour = screen_name, label = text)) +
+  geom_line() +
+  geom_point() +
+  geom_text(alpha = 0) -> p
+
+ggplotly(p, tooltip = "text")
+
+tweets %>% 
+  ggplot(aes(sentiment, fill = screen_name)) +
+  geom_density(alpha = 0.5) +
+  theme_minimal()
+```
+
+# Comparing frequencies of word usage
+```{r}
+# reference - https://www.tidytextmining.com/twitter.html
+remove_reg <- "&amp;|&lt;|&gt;"
+tidy_tweets <- tweets %>%
+  mutate(text = str_remove_all(text, remove_reg)) %>%
+  unnest_tokens(word, text, token = "tweets") %>%
+  filter(
+    !word %in% stop_words$word,!word %in% str_remove_all(stop_words$word, "'"),
+    str_detect(word, "[a-z]")
+  )
+
+frequency <- tidy_tweets %>%
+  count(screen_name, word, sort = TRUE) %>%
+  left_join(tidy_tweets %>%
+              count(screen_name, name = "total")) %>%
+  mutate(freq = n / total)
+
+frequency <- frequency %>% 
+  select(screen_name, word, freq) %>% 
+  pivot_wider(names_from = screen_name, values_from = freq) %>%
+  arrange(GOP, TheDemocrats)
+
+ggplot(frequency, aes(GOP, TheDemocrats)) +
+  geom_jitter(alpha = 0.1, size = 2.5, width = 0.25, height = 0.25) +
+  geom_text(aes(label = word), check_overlap = TRUE, vjust = 1.5) +
+  scale_x_log10(labels = percent_format()) +
+  scale_y_log10(labels = percent_format()) +
+  geom_abline(color = "red") +
+  theme_minimal()
+```
+
+# Topic Modeling
+```{r}
+tweet_doc <- tweets %>%
+  select(screen_name, text) %>%
+  group_by(screen_name) %>%
+  mutate(tweet_number = 1:n()) %>%
+  ungroup() %>%
+  unite(document, screen_name, tweet_number) 
+
+# split into words
+by_chapter_word <- tweet_doc %>%
+                     mutate(text = str_remove_all(text, remove_reg)) %>%
+                     unnest_tokens(word, text, token = "tweets")
+
+# find document-word counts
+word_counts <- by_chapter_word %>%
+  filter(!str_detect(word, "^@")) %>% # remove Twitter usernames
+  anti_join(stop_words) %>%
+  count(document, word, sort = TRUE)
+
+tweets_dtm <- word_counts %>%
+                cast_dtm(document, word, n)
+
+tweets_lda <- LDA(tweets_dtm, k = 2, control = list(seed = 1234))
+
+tweets_topics <- tidy(tweets_lda, matrix = "beta")
+
+top_terms <- tweets_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  scale_y_reordered()
+# suggests that topic 1 is associated with terms that are important to Democrats (e.g. republicans)
+# and topic 2 indicates terms that are important to Republicans (e.g. biden)
+
+# Per-document classification
+tweets_gamma <- tidy(tweets_lda, matrix = "gamma")
+
+tweets_gamma <- tweets_gamma %>% 
+                  mutate(document = str_remove(document, "_[:digit:]+")) %>% 
+                  rename(screen_name = document)
+
+tweets_gamma %>%
+  mutate(screen_name = reorder(screen_name, gamma * topic)) %>%
+  ggplot(aes(factor(topic), gamma)) +
+  geom_boxplot() +
+  facet_wrap(~ screen_name) +
+  labs(x = "topic", y = expression(gamma))
+# The Deocrats score slightly higher for Topic 1 versus Topic 2 (opposite for the GOP), which agrees with our prediction that topic 1 leans more Democrat and topic 2 leans more Republican
+```
+

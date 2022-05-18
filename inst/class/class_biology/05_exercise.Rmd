@@ -1,93 +1,97 @@
 ---
-title: "Making a Volcano Plot"
-output: html_document
+title: "Tidybiology: Class 5 Report Exercise"
+subtitle: "My favorite gene is `r params$gene`"
+output: html_document  
+params: 
+  gene: "MDH2"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(ggrepel)
-library(fontawesome)
+library(tidybiology)
+library(mitocarta)
+library(viridis)
 
-golub_subjects <- read_csv("https://raw.githubusercontent.com/BAREJAA/website_for_john/master/datasets/golub_kaggle/golub_subjects.csv")
-gene_pval <- read_csv("https://raw.githubusercontent.com/BAREJAA/website_for_john/master/datasets/golub_kaggle/gene_pval.csv")
+#clear environment
+#rm(list=ls()) 
+
+mitocarta_class5 <- mitocarta %>% 
+  filter(mcarta2_list == 1) %>% 
+  mutate(cerebrum = if_else(str_detect(tissues, "cerebrum|all"), TRUE, FALSE)) %>% 
+  mutate(cerebellum = if_else(str_detect(tissues, "cerebellum|all"), TRUE, FALSE))  %>% 
+  mutate(brainstem = if_else(str_detect(tissues, "brainstem|all"), TRUE, FALSE)) %>% 
+  mutate(spinalcord = if_else(str_detect(tissues, "spinalcord|all"), TRUE, FALSE)) %>% 
+  mutate(kidney = if_else(str_detect(tissues, "kidney|all"), TRUE, FALSE)) %>% 
+  mutate(liver = if_else(str_detect(tissues, "liver|all"), TRUE, FALSE)) %>% 
+  mutate(heart = if_else(str_detect(tissues, "heart|all"), TRUE, FALSE)) %>% 
+  mutate(skeletalmuscle = if_else(str_detect(tissues, "skeletalmuscle|all"), TRUE, FALSE)) %>% 
+  mutate(adipose = if_else(str_detect(tissues, "adipose|all"), TRUE, FALSE)) %>% 
+  mutate(smallintestine = if_else(str_detect(tissues, "smallintestine|all"), TRUE, FALSE)) %>% 
+  mutate(largeintestine = if_else(str_detect(tissues, "largeintestine|all"), TRUE, FALSE)) %>% 
+  mutate(stomach = if_else(str_detect(tissues, "stomach|all"), TRUE, FALSE)) %>% 
+  mutate(placenta = if_else(str_detect(tissues, "placenta|all"), TRUE, FALSE)) %>% 
+  mutate(testis = if_else(str_detect(tissues, "testis|all"), TRUE, FALSE)) %>% 
+  select(symbol, tissues, cerebrum:testis) 
+
+mitocarta_class5 %>% summarize_if(is.logical, sum, na.rm = TRUE)
+  
+mitocarta_class5_long <- mitocarta_class5 %>% 
+  pivot_longer(cerebrum:testis, names_to = "location", values_to = "true_false")
+
+mitocarta_class5_long %>% group_by(location) %>% count(true_false, sort = TRUE)
+
+mitocarta_class5_intensity <- mitocarta %>% 
+  filter(mcarta2_list == 1) %>% 
+  pivot_longer(cerebrum_total_peak_intensity_log10:testis_total_peak_intensity_log10, names_to = "location_intensity", values_to = "intensity") %>% 
+  select(symbol, location_intensity, intensity, protein_length)
+
+mitocarta_class5_intensity$location_intensity <- str_replace(mitocarta_class5_intensity$location_intensity, "_total_peak_intensity_log10", "")
+
+mitocarta_class5 <- mitocarta_class5_long %>% 
+  left_join(mitocarta_class5_intensity, by = c("symbol" = "symbol", "location" = "location_intensity")) %>% 
+  select(-tissues)
+
+rm(list = c("mitocarta_class5_intensity", "mitocarta_class5_long"))
 ```
 
-## Analysing the Golub dataset `r fa("dna")`
+```{r include=FALSE}
+#####STUDENTS START HERE#####
 
-### Background
-These data was obtained from the package [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html), which is a Biconductor package that offers tools for multiple testing procedures. The "Golub dataset" refers to data used in [Golub et al. (1999)](https://pubmed.ncbi.nlm.nih.gov/10521349/). This was a landmark paper that described the use of genome-wide expression to predict disease status (specifically, acute myeloid lukemia (AML) or acute lymphoblastic lukemia (ALL). This is a rich dataset that is useful for practising everything from [data viz to machine learning](https://www.kaggle.com/crawford/gene-expression).  
+#Which tissue has the most unique mitochondrial proteins?
+mitocarta_class5 %>% 
+  group_by(location) %>% 
+  count(true_false, sort = TRUE)
 
-## Making a Volcano Plot `r fa("mountain")`
+#Store an object to call below
+top <- mitocarta_class5 %>% 
+  group_by(location) %>% 
+  count(true_false, sort = TRUE) %>% 
+  ungroup() %>% 
+  slice(1)
 
-We first need to join the two dataframes - `golub_subjects` and `gene_pval`.  
+#calculate average lengths of all proteins
+avg_length <- mitocarta_class5 %>% 
+  filter(true_false == TRUE) %>% 
+  group_by(location) %>% 
+  summarize(mean_length = mean(protein_length, na.rm = TRUE)) %>% #need to remove NAs to make fun(mean) work
+  arrange(desc(mean_length))
 
-```{r inner-join}
-golub_full <- golub_subjects %>% 
-                inner_join(gene_pval, by = "gene_name")
+#Store favorite gene
+fav <- mitocarta_class5 %>% 
+  filter(symbol == params$gene) %>% 
+  arrange(desc(intensity)) %>% 
+  slice(1)
+
+#store an object to call longer
+longer <- if_else(
+  fav$protein_length > avg_length %>% filter(location == fav$location) %>% pull(mean_length), "longer", "shorter"
+)
 ```
 
-Before proceeding, let's first remove all rows that contain "AFFX" in the `gene_name` column.  
-
-```{r stringr}
-golub_full <- golub_full %>% 
-               filter(!str_detect(gene_name, "AFFX"))
-```
-
-Then calculate the negative log 10 p-values and log fold-change
-
-```{r p-val-fc}
-golub_full <- golub_full %>% 
-                mutate(neg_log_pval = -log10(p_val_adj)) %>% 
-                mutate(log_fc = mean_ALL - mean_AML) 
-```
-
-
-Make the volcano plots!
-
-```{r volcano, echo = FALSE}
-ggplot(golub_full, aes(log_fc, neg_log_pval)) +
-   geom_point(data = filter(golub_full, neg_log_pval > -log10(0.05), log_fc > log10(2)|log_fc < -log10(2)), colour = "blue", shape = 21, size = 1) +  
-  geom_point(data = filter(golub_full, neg_log_pval <= -log10(0.05)), colour = "black", size = 1) + 
-  geom_point(data = filter(golub_full, log_fc <= log10(2), log_fc >= -log10(2)), colour = "black", size = 1) + 
-  geom_text_repel(data = filter(golub_full, log_fc == max(log_fc)), aes(label = word(gene_name)[1])) +
-  geom_vline(xintercept = 0) +
-  geom_vline(xintercept = log10(2), linetype = "dashed", colour = "red") +
-  geom_vline(xintercept = -log10(2), linetype = "dashed", colour = "red") +
-  geom_hline(yintercept = -log10(0.05), linetype = "dotted", colour = "red") +
-  labs(x = "Log Fold-Change",
-       y = "Negative log10 Adjusted p-value",
-       title = "Volcano plot for Golub dataset",
-       subtitle = "Comparing mean log10 expression values for ALL vs. AML",
-       caption = "Data Source: multtest R package") +
-  theme_bw() 
-```
-
-Volcano plot code explained
-```{r volcano-explained, eval = FALSE}
-# Plot log_fc against neg_log_pval
-ggplot(golub_full, aes(log_fc, neg_log_pval)) +
-  # Highlight significantly different genes that are also above abs(log10(2)) threshold using blue circles
-   geom_point(data = filter(golub_full, neg_log_pval > -log10(0.05), log_fc > log10(2)|log_fc < -log10(2)), colour = "blue", shape = 21, size = 1) +  
-  # Make all other points black dots
-  geom_point(data = filter(golub_full, neg_log_pval <= -log10(0.05)), colour = "black", size = 1) + 
-  geom_point(data = filter(golub_full, log_fc <= log10(2), log_fc >= -log10(2)), colour = "black", size = 1) + 
-  # Label the gene with the maximum log_fc value, and clean up the name (the original is very long)
-  geom_text_repel(data = filter(golub_full, log_fc == max(log_fc)), aes(label = word(gene_name)[1])) +
-  # Highlight the y-axis using a solid black line
-  geom_vline(xintercept = 0) +
-  # Draw a red dashed line to show positive log_fc threshold (arbitrarily chosen value)
-  geom_vline(xintercept = log10(2), linetype = "dashed", colour = "red") +
-  # Draw a red dashed line to show negative log_fc threshold (arbitrarily chosen value)
-  geom_vline(xintercept = -log10(2), linetype = "dashed", colour = "red") +
-  # Draw a red dotted line to show neg_log_pval threshold threshold (arbitrarily chosen value)
-  geom_hline(yintercept = -log10(0.05), linetype = "dotted", colour = "red") +
-  # Add text labels
-  labs(x = "Log Fold-Change",
-       y = "Negative log10 Adjusted p-value",
-       title = "Volcano plot for Golub dataset",
-       subtitle = "Comparing mean log10 expression values for ALL vs. AML",
-       caption = "Data Source: multtest R package") +
-  # Change theme to make a cleaner plot
-  theme_bw() 
+  
+My favorite gene is `r fav$symbol`, which encodes a mitochondrial protein that is most abundant in the `r fav$location` and is `r fav$protein_length` amino acids long. The average length of proteins in the `r fav$location` is `r round(avg_length %>% filter(location == fav$location) %>% pull(mean_length),0)` amino acids, which makes `r fav$symbol` `r longer` than average.
+  
+```{r provenance, include=FALSE}
+#Session information for provenance and reproducibility
+session_provenance()
 ```

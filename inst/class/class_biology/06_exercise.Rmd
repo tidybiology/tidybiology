@@ -1,0 +1,93 @@
+---
+title: "Making a Volcano Plot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggrepel)
+library(fontawesome)
+
+golub_subjects <- read_csv("https://raw.githubusercontent.com/BAREJAA/website_for_john/master/datasets/golub_kaggle/golub_subjects.csv")
+gene_pval <- read_csv("https://raw.githubusercontent.com/BAREJAA/website_for_john/master/datasets/golub_kaggle/gene_pval.csv")
+```
+
+## Analysing the Golub dataset `r fa("dna")`
+
+### Background
+These data was obtained from the package [multtest](https://www.bioconductor.org/packages/release/bioc/html/multtest.html), which is a Biconductor package that offers tools for multiple testing procedures. The "Golub dataset" refers to data used in [Golub et al. (1999)](https://pubmed.ncbi.nlm.nih.gov/10521349/). This was a landmark paper that described the use of genome-wide expression to predict disease status (specifically, acute myeloid lukemia (AML) or acute lymphoblastic lukemia (ALL). This is a rich dataset that is useful for practising everything from [data viz to machine learning](https://www.kaggle.com/crawford/gene-expression).  
+
+## Making a Volcano Plot `r fa("mountain")`
+
+We first need to join the two dataframes - `golub_subjects` and `gene_pval`.  
+
+```{r inner-join}
+golub_full <- golub_subjects %>% 
+                inner_join(gene_pval, by = "gene_name")
+```
+
+Before proceeding, let's first remove all rows that contain "AFFX" in the `gene_name` column.  
+
+```{r stringr}
+golub_full <- golub_full %>% 
+               filter(!str_detect(gene_name, "AFFX"))
+```
+
+Then calculate the negative log 10 p-values and log fold-change
+
+```{r p-val-fc}
+golub_full <- golub_full %>% 
+                mutate(neg_log_pval = -log10(p_val_adj)) %>% 
+                mutate(log_fc = mean_ALL - mean_AML) 
+```
+
+
+Make the volcano plots!
+
+```{r volcano, echo = FALSE}
+ggplot(golub_full, aes(log_fc, neg_log_pval)) +
+   geom_point(data = filter(golub_full, neg_log_pval > -log10(0.05), log_fc > log10(2)|log_fc < -log10(2)), colour = "blue", shape = 21, size = 1) +  
+  geom_point(data = filter(golub_full, neg_log_pval <= -log10(0.05)), colour = "black", size = 1) + 
+  geom_point(data = filter(golub_full, log_fc <= log10(2), log_fc >= -log10(2)), colour = "black", size = 1) + 
+  geom_text_repel(data = filter(golub_full, log_fc == max(log_fc)), aes(label = word(gene_name)[1])) +
+  geom_vline(xintercept = 0) +
+  geom_vline(xintercept = log10(2), linetype = "dashed", colour = "red") +
+  geom_vline(xintercept = -log10(2), linetype = "dashed", colour = "red") +
+  geom_hline(yintercept = -log10(0.05), linetype = "dotted", colour = "red") +
+  labs(x = "Log Fold-Change",
+       y = "Negative log10 Adjusted p-value",
+       title = "Volcano plot for Golub dataset",
+       subtitle = "Comparing mean log10 expression values for ALL vs. AML",
+       caption = "Data Source: multtest R package") +
+  theme_bw() 
+```
+
+Volcano plot code explained
+```{r volcano-explained, eval = FALSE}
+# Plot log_fc against neg_log_pval
+ggplot(golub_full, aes(log_fc, neg_log_pval)) +
+  # Highlight significantly different genes that are also above abs(log10(2)) threshold using blue circles
+   geom_point(data = filter(golub_full, neg_log_pval > -log10(0.05), log_fc > log10(2)|log_fc < -log10(2)), colour = "blue", shape = 21, size = 1) +  
+  # Make all other points black dots
+  geom_point(data = filter(golub_full, neg_log_pval <= -log10(0.05)), colour = "black", size = 1) + 
+  geom_point(data = filter(golub_full, log_fc <= log10(2), log_fc >= -log10(2)), colour = "black", size = 1) + 
+  # Label the gene with the maximum log_fc value, and clean up the name (the original is very long)
+  geom_text_repel(data = filter(golub_full, log_fc == max(log_fc)), aes(label = word(gene_name)[1])) +
+  # Highlight the y-axis using a solid black line
+  geom_vline(xintercept = 0) +
+  # Draw a red dashed line to show positive log_fc threshold (arbitrarily chosen value)
+  geom_vline(xintercept = log10(2), linetype = "dashed", colour = "red") +
+  # Draw a red dashed line to show negative log_fc threshold (arbitrarily chosen value)
+  geom_vline(xintercept = -log10(2), linetype = "dashed", colour = "red") +
+  # Draw a red dotted line to show neg_log_pval threshold threshold (arbitrarily chosen value)
+  geom_hline(yintercept = -log10(0.05), linetype = "dotted", colour = "red") +
+  # Add text labels
+  labs(x = "Log Fold-Change",
+       y = "Negative log10 Adjusted p-value",
+       title = "Volcano plot for Golub dataset",
+       subtitle = "Comparing mean log10 expression values for ALL vs. AML",
+       caption = "Data Source: multtest R package") +
+  # Change theme to make a cleaner plot
+  theme_bw() 
+```
